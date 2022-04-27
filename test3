@@ -1,7 +1,8 @@
 function Aaa () : int is
-    var a : int is 8 + 7
-    print a
     Bbb ()
+    var b : int is 8 + 7
+    print b
+
 end
 
 function Bbb () : int is
