@@ -28,7 +28,7 @@ Program : { FunctionDeclaration | Import }
 
 SimpleDeclaration : VariableDeclaration | TypeDeclaration
 
-VariableDeclaration : Type Identifier = Expression | Identifier
+VariableDeclaration : Type Identifier = Expression
 
 TypeDeclaration : type Identifier is Type
 
@@ -79,5 +79,7 @@ Summand : Primary | ( Expression )
 
 Primary : IntegralLiteral | StringLiteral | DoubleLiteral | true | false | ArrayMember
 
-ReturnStatement: return Identifier | return Expression
+ReturnStatement: return Expression
+
+PrintStatement : print Expression
 
