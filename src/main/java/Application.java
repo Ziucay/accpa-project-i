@@ -27,7 +27,7 @@ public class Application {
 
             lexer.tokens.add(new Token(TokenType.EOF, "eof", null, 0, 0));
 
-            Parser parser = new Parser(false);
+            Parser parser = new Parser(true);
             parser.setTokens(lexer.tokens);
             parser.run();
 
