@@ -2,6 +2,7 @@ import lexer.Lexer;
 import lexer.Token;
 import lexer.TokenType;
 import parser.Parser;
+import interpreter.Interpreter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,9 +31,11 @@ public class Application {
             parser.setTokens(lexer.tokens);
             parser.run();
 
-
-            System.out.println(parser.root.toString());
             System.out.println(lexer.tokens);
+            System.out.println(parser.root.toString());
+
+            Interpreter interpreter = new Interpreter();
+            interpreter.traverseTree(parser.root, argv[1]);
         }
         catch (java.io.FileNotFoundException e) {
             System.out.println("File not found : \""+filename+"\"");
@@ -45,11 +48,5 @@ public class Application {
             System.out.println("Unexpected exception:");
             e.printStackTrace();
         }
-
-
-
-
     }
-
-
 }

@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Node {
     public String identifier;
-    Object value;
+    public Object value;
     public List<Node> descendants;
 
     public float realValue;
