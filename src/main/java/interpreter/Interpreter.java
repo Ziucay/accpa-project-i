@@ -18,6 +18,8 @@ public class Interpreter {
             if (child.descendants.get(1).descendants != null)
                 for (Node parameter :
                         child.descendants.get(1).descendants) {
+                    if (parameter == null)
+                        break;
                     block.createVariable(parameter.descendants.get(0).identifier, parameter.descendants.get(1).identifier);
                     func.addParameterIdentifier(parameter.descendants.get(0).identifier);
                 }
