@@ -74,7 +74,6 @@ public class Interpreter {
                 return (boolean) traverse(node.descendants.get(0), block)
                         ^ (boolean) traverse(node.descendants.get(1), block);
             case "body":
-            case "root":
                 for (Node child :
                         node.descendants) {
                     traverse(child, block);
