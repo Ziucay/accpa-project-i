@@ -1,0 +1,4 @@
+function Aaa () : int is
+    var a : int is 8
+    print a
+end

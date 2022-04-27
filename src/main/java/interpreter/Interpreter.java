@@ -36,17 +36,17 @@ public class Interpreter {
     public Object traverse(Node node, Block block) {
         switch (node.identifier) {
             case "plus":
-                return (double) traverse(node.descendants.get(0), block)
-                        + (double) traverse(node.descendants.get(1), block);
+                return (int) traverse(node.descendants.get(0), block)
+                        + (int) traverse(node.descendants.get(1), block);
             case "minus":
-                return (double) traverse(node.descendants.get(0), block)
-                        - (double) traverse(node.descendants.get(1), block);
+                return (int) traverse(node.descendants.get(0), block)
+                        - (int) traverse(node.descendants.get(1), block);
             case "multiply":
-                return (double) traverse(node.descendants.get(0), block)
-                        * (double) traverse(node.descendants.get(1), block);
+                return (int) traverse(node.descendants.get(0), block)
+                        * (int) traverse(node.descendants.get(1), block);
             case "divide":
-                return (double) traverse(node.descendants.get(0), block)
-                        / (double) traverse(node.descendants.get(1), block);
+                return (int) traverse(node.descendants.get(0), block)
+                        / (int) traverse(node.descendants.get(1), block);
             case "more":
                 return (double) traverse(node.descendants.get(0), block)
                         > (double) traverse(node.descendants.get(1), block);
@@ -105,7 +105,11 @@ public class Interpreter {
                 System.out.println(traverse(node.descendants.get(0), block));
                 return null;
             default:
-                return block.getVariableValue(node.identifier);
+                if (block.isVariable(node.identifier))
+                    return block.getVariableValue(node.identifier);
+                else {
+                    return node.value;
+                }
         }
     }
 }
