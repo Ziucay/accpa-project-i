@@ -2,7 +2,6 @@ package interpreter;
 
 import parser.Node;
 
-import java.util.ArrayList;
 import java.util.Objects;
 
 public class Interpreter {
@@ -104,6 +103,8 @@ public class Interpreter {
             case "print":
                 System.out.println(traverse(node.descendants.get(0), block));
                 return null;
+            case "modifiable":
+                return traverse(node.descendants.get(0), block);
             default:
                 if (block.isVariable(node.identifier))
                     return block.getVariableValue(node.identifier);
