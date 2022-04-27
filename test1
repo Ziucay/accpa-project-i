@@ -1,0 +1,3 @@
+function Aaa () : int is
+    return 1 + 2
+end
