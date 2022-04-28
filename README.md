@@ -83,3 +83,29 @@ ReturnStatement: return Expression
 
 PrintStatement : print Expression
 
+## What we implemented so far
+
+- Lexical analysis
+- Parsing, building AST (partially)
+- Interpreter (partially)
+- variables(explicit typing)
+- functions
+- built-in print method
+- int type support
+- basic expression calculation
+
+## What we are going to implement
+
+- Type checking
+- Type inference
+- support for double, boolean, string
+- Interactive mode of the interpreter
+- conditional operations, loops
+- user-defined types
+- single-line comments
+- simple imports
+- standart library
+- first-class functions
+- built-in arrays
+- built-in dicts
+
