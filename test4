@@ -1,0 +1,7 @@
+function sum (a : int, b : int) : int is
+    print a + b
+end
+
+function Aaa () : int is
+    sum(10, 27)
+end
