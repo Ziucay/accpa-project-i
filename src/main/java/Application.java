@@ -5,7 +5,6 @@ import parser.Parser;
 import interpreter.Interpreter;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Paths;
 import java.nio.file.Files;
@@ -33,6 +32,8 @@ public class Application {
 
             System.out.println(lexer.tokens);
             System.out.println(parser.root.toString());
+
+            System.out.println("Program execution starts");
 
             Interpreter interpreter = new Interpreter();
             interpreter.traverseTree(parser.root, argv[1]);

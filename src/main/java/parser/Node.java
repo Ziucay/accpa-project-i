@@ -1,5 +1,6 @@
 package parser;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -16,7 +17,7 @@ public class Node {
     public Node(String identifier, Object value, List<Node> descendants) {
         this.identifier = identifier;
         this.value = value;
-        this.descendants = descendants;
+        this.descendants = new ArrayList<>(descendants);
 
         parseValue(value);
     }
@@ -24,7 +25,7 @@ public class Node {
     public Node(String identifier, Object value) {
         this.identifier = identifier;
         this.value = value;
-        this.descendants = null;
+        this.descendants = new ArrayList<>();
 
         parseValue(value);
     }
