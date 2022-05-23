@@ -55,6 +55,15 @@ public class Block {
             return null;
     }
 
+    public String getVariableType(String identifier) {
+        if (this.variableIds.containsKey(identifier))
+            return this.variableIds.get(identifier).type;
+        else if (this.prev != null)
+            return this.prev.getVariableType(identifier);
+        else
+            return null;
+    }
+
 
     public boolean createFunction(String identifier, Node body, String type, Block block) {
         try {
