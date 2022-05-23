@@ -35,37 +35,88 @@ public class Interpreter {
     }
 
     public Object traverse(Node node, Block block) {
+        Object left, right, result;
         switch (node.identifier) {
             case "plus":
-                return (int) traverse(node.descendants.get(0), block)
-                        + (int) traverse(node.descendants.get(1), block);
+                left = traverse(node.descendants.get(0), block);
+                right = traverse(node.descendants.get(1), block);
+                if (left instanceof Integer) {
+                    return (int) left + (int) right;
+                } else {
+                    return (double) left + (double) right;
+                }
             case "minus":
-                return (int) traverse(node.descendants.get(0), block)
-                        - (int) traverse(node.descendants.get(1), block);
+                left = traverse(node.descendants.get(0), block);
+                right = traverse(node.descendants.get(1), block);
+                if (left instanceof Integer) {
+                    return (int) left - (int) right;
+                } else {
+                    return (double) left - (double) right;
+                }
             case "multiply":
-                return (int) traverse(node.descendants.get(0), block)
-                        * (int) traverse(node.descendants.get(1), block);
+                left = traverse(node.descendants.get(0), block);
+                right = traverse(node.descendants.get(1), block);
+                if (left instanceof Integer) {
+                    return (int) left * (int) right;
+                } else {
+                    return (double) left * (double) right;
+                }
             case "divide":
-                return (int) traverse(node.descendants.get(0), block)
-                        / (int) traverse(node.descendants.get(1), block);
+                left = traverse(node.descendants.get(0), block);
+                right = traverse(node.descendants.get(1), block);
+                if (left instanceof Integer) {
+                    return (int) left / (int) right;
+                } else {
+                    return (double) left / (double) right;
+                }
             case "more":
-                return (double) traverse(node.descendants.get(0), block)
-                        > (double) traverse(node.descendants.get(1), block);
+                left = traverse(node.descendants.get(0), block);
+                right = traverse(node.descendants.get(1), block);
+                if (left instanceof Integer) {
+                    return (int) left > (int) right;
+                } else {
+                    return (double) left > (double) right;
+                }
             case "more or equal":
-                return (double) traverse(node.descendants.get(0), block)
-                        >= (double) traverse(node.descendants.get(1), block);
+                left = traverse(node.descendants.get(0), block);
+                right = traverse(node.descendants.get(1), block);
+                if (left instanceof Integer) {
+                    return (int) left >= (int) right;
+                } else {
+                    return (double) left >= (double) right;
+                }
             case "equal":
-                return (double) traverse(node.descendants.get(0), block)
-                        == (double) traverse(node.descendants.get(1), block);
+                left = traverse(node.descendants.get(0), block);
+                right = traverse(node.descendants.get(1), block);
+                if (left instanceof Integer) {
+                    return (int) left == (int) right;
+                } else {
+                    return (double) left == (double) right;
+                }
             case "less":
-                return (double) traverse(node.descendants.get(0), block)
-                        < (double) traverse(node.descendants.get(1), block);
+                left = traverse(node.descendants.get(0), block);
+                right = traverse(node.descendants.get(1), block);
+                if (left instanceof Integer) {
+                    return (int) left < (int) right;
+                } else {
+                    return (double) left < (double) right;
+                }
             case "less or equal":
-                return (double) traverse(node.descendants.get(0), block)
-                        <= (double) traverse(node.descendants.get(1), block);
+                left = traverse(node.descendants.get(0), block);
+                right = traverse(node.descendants.get(1), block);
+                if (left instanceof Integer) {
+                    return (int) left <= (int) right;
+                } else {
+                    return (double) left <= (double) right;
+                }
             case "not equal":
-                return (double) traverse(node.descendants.get(0), block)
-                        != (double) traverse(node.descendants.get(1), block);
+                left = traverse(node.descendants.get(0), block);
+                right = traverse(node.descendants.get(1), block);
+                if (left instanceof Integer) {
+                    return (int) left != (int) right;
+                } else {
+                    return (double) left != (double) right;
+                }
             case "or":
                 return (boolean) traverse(node.descendants.get(0), block)
                         || (boolean) traverse(node.descendants.get(1), block);
@@ -78,7 +129,7 @@ public class Interpreter {
             case "body":
                 for (Node child :
                         node.descendants) {
-                    Object result = traverse(child, block);
+                    result = traverse(child, block);
                     if (result instanceof ReturnObject) {
                         return result;
                     }
@@ -87,7 +138,7 @@ public class Interpreter {
             case "while":
                 Block whileBlock = new Block(block);
                 while ((boolean) traverse(node.descendants.get(0), whileBlock)) {
-                    Object result = traverse(node.descendants.get(1), whileBlock);
+                    result = traverse(node.descendants.get(1), whileBlock);
                     if (result instanceof ReturnObject) {
                         return result;
                     }
@@ -96,13 +147,13 @@ public class Interpreter {
             case "for":
                 Block forBlock = new Block(block);
                 String variable = node.descendants.get(0).descendants.get(0).identifier;
-                int left = (int) traverse(node.descendants.get(1).descendants.get(0), forBlock);
-                int right = (int) traverse(node.descendants.get(1).descendants.get(1), forBlock);
-                block.assignVariable(variable, left);
+                int leftRange = (int) traverse(node.descendants.get(1).descendants.get(0), forBlock);
+                int rightRange = (int) traverse(node.descendants.get(1).descendants.get(1), forBlock);
+                block.assignVariable(variable, leftRange);
                 int forVariable = (int) block.getVariableValue(variable);
-                if (left > right) {
-                    while (forVariable > right) {
-                        Object result = traverse(node.descendants.get(2), forBlock);
+                if (leftRange > rightRange) {
+                    while (forVariable > rightRange) {
+                        result = traverse(node.descendants.get(2), forBlock);
                         if (result instanceof ReturnObject) {
                             return result;
                         }
@@ -110,8 +161,8 @@ public class Interpreter {
                         block.assignVariable(variable, forVariable);
                     }
                 } else {
-                    while (forVariable < right) {
-                        Object result = traverse(node.descendants.get(2), forBlock);
+                    while (forVariable < rightRange) {
+                        result = traverse(node.descendants.get(2), forBlock);
                         if (result instanceof ReturnObject) {
                             return result;
                         }
@@ -125,13 +176,12 @@ public class Interpreter {
                 boolean conditionCheck = (boolean) traverse(node.descendants.get(0), ifBlock);
                 if (node.descendants.size() == 2) {
                     if (conditionCheck) {
-                        Object result = traverse(node.descendants.get(1), ifBlock);
+                        result = traverse(node.descendants.get(1), ifBlock);
                         if (result instanceof ReturnObject) {
                             return result;
                         }
                     }
                 } else {
-                    Object result;
                     if (conditionCheck) {
                         result = traverse(node.descendants.get(1), ifBlock);
                     }
@@ -144,7 +194,7 @@ public class Interpreter {
                 }
                 return null;
             case "return":
-                Object result = traverse(node.descendants.get(0), block);
+                result = traverse(node.descendants.get(0), block);
                 return new ReturnObject(result);
             case "function-call":
                 FunctionValue func = new FunctionValue(block.getFunctionValue(node.descendants.get(0).identifier));
@@ -161,7 +211,8 @@ public class Interpreter {
                 if (node.descendants.size() == 2) {
                     block.createVariable(node.descendants.get(0).identifier, (String) node.descendants.get(1).value);
                 } else if (node.descendants.size() == 3) {
-                    block.createVariable(node.descendants.get(0).identifier, traverse(node.descendants.get(2), block), (String) node.descendants.get(1).value);
+                    result = traverse(node.descendants.get(2), block);
+                    block.createVariable(node.descendants.get(0).identifier, result, (String) node.descendants.get(1).value);
                 }
                 return null;
             case "assignment":
@@ -173,8 +224,9 @@ public class Interpreter {
             case "modifiable":
                 return traverse(node.descendants.get(0), block);
             default:
-                if (block.isVariable(node.identifier))
+                if (block.isVariable(node.identifier)) {
                     return block.getVariableValue(node.identifier);
+                }
                 else {
                     return node.value;
                 }
