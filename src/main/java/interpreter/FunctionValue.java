@@ -16,6 +16,15 @@ public class FunctionValue {
         this.block = block;
     }
 
+    public FunctionValue (FunctionValue copy) {
+        this.body = copy.body;
+        this.parameters = new ArrayList<>();
+        this.parameters.addAll(copy.parameters);
+        this.type = copy.type;
+        this.block = new Block();
+        this.block.cloneBlock(copy.block);
+    }
+
     public void addParameterIdentifier (String identifier) {
         this.parameters.add(identifier);
     }

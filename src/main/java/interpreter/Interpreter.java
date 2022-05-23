@@ -82,8 +82,9 @@ public class Interpreter {
                 }
                 return null;
             case "function-call":
-                FunctionValue func = block.getFunctionValue(node.descendants.get(0).identifier);
-                Block funcBlock = func.block;
+                FunctionValue func = new FunctionValue(block.getFunctionValue(node.descendants.get(0).identifier));
+                Block funcBlock = new Block();
+                funcBlock.cloneBlock(func.block);
                 int parameterCounter = 1;
                 for (String parameter :
                         func.parameters) {

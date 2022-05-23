@@ -2,6 +2,7 @@ package interpreter;
 
 import parser.Node;
 import java.util.HashMap;
+import java.util.Map;
 
 public class Block {
     Block prev;
@@ -14,6 +15,16 @@ public class Block {
 
     public Block() {
         this.prev = null;
+    }
+
+    public void cloneBlock (Block copy) {
+        this.prev = copy.prev;
+        for (Map.Entry<String, VariableValue> entry : copy.variableIds.entrySet()) {
+            this.variableIds.put(entry.getKey(), new VariableValue(entry.getValue()));
+        }
+        for (Map.Entry<String, FunctionValue> entry : copy.functionIds.entrySet()) {
+            this.functionIds .put(entry.getKey(), new FunctionValue(entry.getValue()));
+        }
     }
 
     public boolean isVariable(String id) {

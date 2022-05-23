@@ -8,4 +8,9 @@ public class VariableValue {
         this.value = value;
         this.type = type;
     }
+
+    public VariableValue(VariableValue copy) {
+        this.value = copy.value;
+        this.type = copy.type;
+    }
 }
