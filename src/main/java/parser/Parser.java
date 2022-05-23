@@ -504,6 +504,7 @@ final static String yyrule[] = {
     List<Token> tokens;
     int tokenPointer = 0;
     public Node root = new Node("root", null, new LinkedList<>());
+    public int errors = 0;
 
 
     public void setTokens(List<Token> tokens) {
@@ -513,6 +514,7 @@ final static String yyrule[] = {
 
 private void yyerror(String syntax_error) {
 	System.out.println("Error: " + syntax_error);
+        errors++;
 }
 
     private int yylex() {
@@ -529,7 +531,7 @@ private void yyerror(String syntax_error) {
         tokenPointer++;
         return tokens.get(tokenPointer - 1).TokenTypeToInt();
     }
-//#line 461 "Parser.java"
+//#line 463 "Parser.java"
 //###############################################################
 // method: yylexdebug : check lexer state
 //###############################################################
@@ -709,7 +711,7 @@ case 11:
 break;
 case 12:
 //#line 99 "parser.y"
-{yyval = new ParserVal(new Node("function-declaration", null, Arrays.asList(val_peek(6).obj,new Node("arguments", null, Arrays.asList(val_peek(4).obj)), val_peek(1).obj)));}
+{yyval = new ParserVal(new Node("function-declaration", null, Arrays.asList(val_peek(6).obj,new Node("parameters", null, Arrays.asList(val_peek(4).obj)), val_peek(1).obj)));}
 break;
 case 13:
 //#line 100 "parser.y"
@@ -721,7 +723,7 @@ case 14:
 break;
 case 15:
 //#line 102 "parser.y"
-{yyval = new ParserVal(new Node("function-declaration", null, Arrays.asList(val_peek(8).obj, new Node("arguments", null, Arrays.asList(val_peek(6).obj)),val_peek(3).obj,val_peek(1).obj)));}
+{yyval = new ParserVal(new Node("function-declaration", null, Arrays.asList(val_peek(8).obj, new Node("parameters", null, Arrays.asList(val_peek(6).obj)),val_peek(3).obj,val_peek(1).obj)));}
 break;
 case 16:
 //#line 103 "parser.y"
@@ -983,7 +985,7 @@ case 83:
 //#line 240 "parser.y"
 {yyval = new ParserVal(new Node(yylval.sval, null));}
 break;
-//#line 910 "Parser.java"
+//#line 912 "Parser.java"
 //########## END OF USER-SUPPLIED ACTIONS ##########
     }//switch
     //#### Now let's reduce... ####

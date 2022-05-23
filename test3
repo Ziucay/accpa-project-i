@@ -1,11 +1,11 @@
 function Aaa () : int is
-    var b : int is 8 + 7
+    var b : int is 8.1 + 7.1
     print b
     Bbb()
     Bbb()
 end
 
 function Bbb () : int is
-    var a : int is 8 + 5
+    var a : int is 8.1 + 5.1
     print a
 end

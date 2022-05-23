@@ -1,0 +1,16 @@
+parser\Parser.class
+interpreter\FunctionValue.class
+lexer\Token$1.class
+parser\SymbolTable.class
+interpreter\VariableValue.class
+parser\Parser$1.class
+parser\ParserValType.class
+parser\Node.class
+lexer\Lexer.class
+parser\ParserVal$1.class
+lexer\Token.class
+lexer\TokenType.class
+parser\ParserVal.class
+interpreter\Block.class
+Application.class
+interpreter\Interpreter.class

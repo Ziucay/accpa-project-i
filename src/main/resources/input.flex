@@ -11,6 +11,10 @@ import java.util.List;
 %char
 %column
 
+%eof{
+tokens.add(new Token(TokenType.EOF, "eof", null, 0, 0));
+%eof}
+
 Whitespace = [\ \t]+
 Newline = \r|\n|\r\n
 Integer = [0-9]+

@@ -123,10 +123,10 @@ Body
 	;
 
 Statements : Statement Statements
-	   |
+	   | 
 	   ;
 
-Statement
+Statement 
 	: Assignment {$$ = $1; blockStack.peek().add($1.obj);}
 	| FunctionCall {$$ = $1; blockStack.peek().add($1.obj);}
 	| WhileLoop {$$ = $1; blockStack.peek().add($1.obj);}
@@ -168,7 +168,7 @@ ArgumentDeclaration
 Expressions
 	: Expression {$$ = $1;}
 	| Expression COMMA Expressions {((Node)$3.obj).descendants.add($1.obj); $$ = $3;}
-	|
+	| 
 	;
 
 WhileLoop
@@ -200,7 +200,7 @@ Expression
 	| Relation OR Expression {$$ = new ParserVal(new Node("or", null, Arrays.asList($1.obj, $3.obj)));}
 	| Relation XOR Expression {$$ = new ParserVal(new Node("xor", null, Arrays.asList($1.obj, $3.obj)));}
 	| Relation {$$ = $1;}
-	;
+	; 
 
 Relation
 	: Simple LESS Relation {$$ = new ParserVal(new Node("less", null, Arrays.asList($1.obj, $3.obj)));}
@@ -210,24 +210,24 @@ Relation
 	| Simple EQUAL Relation {$$ = new ParserVal(new Node("equal", null, Arrays.asList($1.obj, $3.obj)));}
 	| Simple SLASH_EQUAL Relation {$$ = new ParserVal(new Node("not equal", null, Arrays.asList($1.obj, $3.obj)));}
 	| Simple {$$ = $1;}
-	;
+	; 
 
 Simple
 	: Factor STAR Simple {$$ = new ParserVal(new Node("multiply", null, Arrays.asList($1.obj, $3.obj)));}
 	| Factor SLASH Simple {$$ = new ParserVal(new Node("divide", null, Arrays.asList($1.obj, $3.obj)));}
 	| Factor PERCENT Simple {$$ = new ParserVal(new Node("percent", null, Arrays.asList($1.obj, $3.obj)));}
 	| Factor {$$ = $1;}
-	;
+	; 
 
 Factor
 	: Summand PLUS Factor {$$ = new ParserVal(new Node("plus", null, Arrays.asList($1.obj, $3.obj)));}
 	| Summand MINUS Factor {$$ = new ParserVal(new Node("minus", null, Arrays.asList($1.obj, $3.obj)));}
 	| Summand {$$ = $1;}
-	;
+	; 
 
 Summand : Primary {$$ = $1;}
 	| LEFT_PAREN Expression RIGHT_PAREN {$$ = new ParserVal(new Node("summand", null, Arrays.asList($2.obj)));}
-	;
+	; 
 
 Primary
 	: DOUBLE {$$ = new ParserVal(new Node(yylval.dval.toString(), Double.valueOf($1.dval)));}
@@ -245,6 +245,7 @@ ModifiablePrimary : IDENTIFIER {$$ = new ParserVal(new Node(yylval.sval, null));
     List<Token> tokens;
     int tokenPointer = 0;
     public Node root = new Node("root", null, new LinkedList<>());
+    public int errors = 0;
 
 
     public void setTokens(List<Token> tokens) {
@@ -254,6 +255,7 @@ ModifiablePrimary : IDENTIFIER {$$ = new ParserVal(new Node(yylval.sval, null));
 
 private void yyerror(String syntax_error) {
 	System.out.println("Error: " + syntax_error);
+        errors++;
 }
 
     private int yylex() {
