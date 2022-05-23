@@ -78,9 +78,74 @@ public class Interpreter {
             case "body":
                 for (Node child :
                         node.descendants) {
-                    traverse(child, block);
+                    Object result = traverse(child, block);
+                    if (result instanceof ReturnObject) {
+                        return result;
+                    }
                 }
                 return null;
+            case "while":
+                Block whileBlock = new Block(block);
+                while ((boolean) traverse(node.descendants.get(0), whileBlock)) {
+                    Object result = traverse(node.descendants.get(1), whileBlock);
+                    if (result instanceof ReturnObject) {
+                        return result;
+                    }
+                }
+                return null;
+            case "for":
+                Block forBlock = new Block(block);
+                String variable = node.descendants.get(0).descendants.get(0).identifier;
+                int left = (int) traverse(node.descendants.get(1).descendants.get(0), forBlock);
+                int right = (int) traverse(node.descendants.get(1).descendants.get(1), forBlock);
+                block.assignVariable(variable, left);
+                int forVariable = (int) block.getVariableValue(variable);
+                if (left > right) {
+                    while (forVariable > right) {
+                        Object result = traverse(node.descendants.get(2), forBlock);
+                        if (result instanceof ReturnObject) {
+                            return result;
+                        }
+                        forVariable--;
+                        block.assignVariable(variable, forVariable);
+                    }
+                } else {
+                    while (forVariable < right) {
+                        Object result = traverse(node.descendants.get(2), forBlock);
+                        if (result instanceof ReturnObject) {
+                            return result;
+                        }
+                        forVariable++;
+                        block.assignVariable(variable, forVariable);
+                    }
+                }
+                return null;
+            case "if":
+                Block ifBlock = new Block(block);
+                boolean conditionCheck = (boolean) traverse(node.descendants.get(0), ifBlock);
+                if (node.descendants.size() == 2) {
+                    if (conditionCheck) {
+                        Object result = traverse(node.descendants.get(1), ifBlock);
+                        if (result instanceof ReturnObject) {
+                            return result;
+                        }
+                    }
+                } else {
+                    Object result;
+                    if (conditionCheck) {
+                        result = traverse(node.descendants.get(1), ifBlock);
+                    }
+                    else {
+                        result = traverse(node.descendants.get(2), ifBlock);
+                    }
+                    if (result instanceof ReturnObject) {
+                        return result;
+                    }
+                }
+                return null;
+            case "return":
+                Object result = traverse(node.descendants.get(0), block);
+                return new ReturnObject(result);
             case "function-call":
                 FunctionValue func = new FunctionValue(block.getFunctionValue(node.descendants.get(0).identifier));
                 Block funcBlock = new Block();
