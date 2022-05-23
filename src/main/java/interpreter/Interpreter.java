@@ -200,10 +200,10 @@ public class Interpreter {
                 FunctionValue func = new FunctionValue(block.getFunctionValue(node.descendants.get(0).identifier));
                 Block funcBlock = new Block();
                 funcBlock.cloneBlock(func.block);
-                int parameterCounter = 1;
+                int parameterCounter = 0;
                 for (String parameter :
                         func.parameters) {
-                    funcBlock.assignVariable(parameter, traverse(node.descendants.get(parameterCounter), block));
+                    funcBlock.assignVariable(parameter, traverse(node.descendants.get(1).descendants.get(parameterCounter), block));
                     parameterCounter++;
                 }
                 return traverse(func.body, funcBlock);
@@ -221,6 +221,7 @@ public class Interpreter {
             case "print":
                 System.out.println(traverse(node.descendants.get(0), block));
                 return null;
+            case "argument":
             case "modifiable":
                 return traverse(node.descendants.get(0), block);
             default:
