@@ -1,5 +1,5 @@
 function Aaa () : int is
-    var b : int is 8.1 + 7.1
+    var b : int is -8.1 + 7.1
     print b
     Bbb()
     Bbb()
