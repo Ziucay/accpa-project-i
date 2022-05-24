@@ -261,4 +261,41 @@ public class CompilerTest {
         interpreter.traverseTree(parser.root, startingFunction);
     }
 
+    @Test
+    public void array() throws IOException {
+
+        final String startingFunction = "array";
+        final String text = """
+                function array (a : int) is
+                    array Identifier : int = [a]
+                    a[0] = 1
+                    a[1] = 3
+                    print a[0]
+                end""";
+
+        initLexer(text);
+        initParser();
+        initInterpreter();
+
+        int result = lexer.yylex();
+
+        assertEquals(0, result);
+
+        System.out.println("Lexer tokens: ");
+        System.out.println(lexer.tokens);
+
+        assertEquals(35,lexer.tokens.size());
+
+        parser.setTokens(lexer.tokens);
+        parser.run();
+
+        assertTrue(parser.errors == 0);
+
+        System.out.println("Built AST tree: ");
+        System.out.println(parser.root.toString());
+
+        System.out.println("Interpreter output: ");
+        interpreter.traverseTree(parser.root, startingFunction);
+    }
+
 }
