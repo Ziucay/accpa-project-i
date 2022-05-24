@@ -236,7 +236,7 @@ public class CompilerTest {
                     recursion(10)
                 end
                 
-                function recursion (a : int) is               
+                function recursion (a : int) is             
                     print a
                     if a > 0 then
                         recursion(a - 1)
