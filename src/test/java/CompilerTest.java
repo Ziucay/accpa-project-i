@@ -226,4 +226,39 @@ public class CompilerTest {
         interpreter.traverseTree(parser.root, startingFunction);
     }
 
+    @Test
+    public void recursion() throws IOException {
+
+        final String startingFunction = "recursion";
+        final String text = """
+                function recursion (a : int) is
+                    print a
+                    recursion(a - 1)
+                end""";
+
+        initLexer(text);
+        initParser();
+        initInterpreter();
+
+        int result = lexer.yylex();
+
+        assertEquals(0, result);
+
+        System.out.println("Lexer tokens: ");
+        System.out.println(lexer.tokens);
+
+        assertEquals(18,lexer.tokens.size());
+
+        parser.setTokens(lexer.tokens);
+        parser.run();
+
+        assertTrue(parser.errors == 0);
+
+        System.out.println("Built AST tree: ");
+        System.out.println(parser.root.toString());
+
+        System.out.println("Interpreter output: ");
+        interpreter.traverseTree(parser.root, startingFunction);
+    }
+
 }
