@@ -229,7 +229,7 @@ public class CompilerTest {
     @Test
     public void recursion() throws IOException {
 
-        final String startingFunction = "recursion";
+        final String startingFunction = "main";
         final String text = """
                 
                 function main() is
