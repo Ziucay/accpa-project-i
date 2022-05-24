@@ -739,15 +739,15 @@ case 12:
 break;
 case 13:
 //#line 104 "parser.y"
-{yyval = new ParserVal(new Node("function-declaration", null, Arrays.asList(val_peek(5).obj,new Node("parameters", null), val_peek(1).obj)));}
+{yyval = new ParserVal(new Node("function-declaration", null, Arrays.asList(val_peek(5).obj, new Node("parameters", null),new Node("empty-type", null), val_peek(1).obj)));}
 break;
 case 14:
 //#line 105 "parser.y"
-{yyval = new ParserVal(new Node("function-declaration", null, Arrays.asList(val_peek(6).obj,new Node("parameters", null, Arrays.asList(val_peek(4).obj)), val_peek(1).obj)));}
+{yyval = new ParserVal(new Node("function-declaration", null, Arrays.asList(val_peek(6).obj,new Node("parameters", null, Arrays.asList(val_peek(4).obj)),new Node("empty-type", null), val_peek(1).obj)));}
 break;
 case 15:
 //#line 106 "parser.y"
-{yyval = new ParserVal(new Node("function-declaration", null, Arrays.asList(val_peek(6).obj, val_peek(4).obj, val_peek(1).obj)));}
+{yyval = new ParserVal(new Node("function-declaration", null, Arrays.asList(val_peek(6).obj, val_peek(4).obj,new Node("empty-type", null), val_peek(1).obj)));}
 break;
 case 16:
 //#line 107 "parser.y"
