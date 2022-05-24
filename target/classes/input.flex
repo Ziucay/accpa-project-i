@@ -17,8 +17,8 @@ tokens.add(new Token(TokenType.EOF, "eof", null, 0, 0));
 
 Whitespace = [\ \t]+
 Newline = \r|\n|\r\n
-Integer = [0-9]+
-Double = [0-9]+.[0-9]+
+Integer = -?[0-9]+
+Double = -?[0-9]+.[0-9]+
 Identifier = [a-zA-Z]+[a-zA-Z0-9_]+
 %{
 public List<Token> tokens = new ArrayList();
@@ -107,6 +107,10 @@ public List<Token> tokens = new ArrayList();
 "print" {tokens.add(new Token(TokenType.PRINT, "print", null, yyline, yycolumn));}
 
 ":" {tokens.add(new Token(TokenType.COLON, "colon", null, yyline, yycolumn));}
+
+"=>" {tokens.add(new Token(TokenType.ARROW, "arrow", null, yyline, yycolumn));}
+
+"func" {tokens.add(new Token(TokenType.FUNC, "func", null, yyline, yycolumn));}
 
 {Integer} {tokens.add(new Token(TokenType.INTEGER, yytext(), null, yyline, yycolumn));}
 

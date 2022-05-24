@@ -231,9 +231,16 @@ public class CompilerTest {
 
         final String startingFunction = "recursion";
         final String text = """
-                function recursion (a : int) is
+                
+                function main() is
+                    recursion(10)
+                end
+                
+                function recursion (a : int) is               
                     print a
-                    recursion(a - 1)
+                    if a > 0 then
+                        recursion(a - 1)
+                    end
                 end""";
 
         initLexer(text);
@@ -247,7 +254,7 @@ public class CompilerTest {
         System.out.println("Lexer tokens: ");
         System.out.println(lexer.tokens);
 
-        assertEquals(18,lexer.tokens.size());
+        assertEquals(34,lexer.tokens.size());
 
         parser.setTokens(lexer.tokens);
         parser.run();

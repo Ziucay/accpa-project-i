@@ -65,6 +65,8 @@ import java.util.*;
 %token STRING
 %token EOF
 %token DOUBLE
+%token ARROW
+%token FUNC
 
 %left PLUS
 %left MINUS
@@ -88,18 +90,22 @@ Line    : VariableDeclaration {root.descendants.add($1.obj);}
 	| FunctionDeclaration {root.descendants.add($1.obj);}
 	;
 
+ArrayDeclaration
+	: ARRAY Identifier COLON Type EQUAL LEFT_SQUARE_BRACE Expression RIGHT_SQUARE_BRACE { $$ = new ParserVal(new Node("array-declaration", null, Arrays.asList($2.obj, $4.obj, $7.obj)));}
+
 VariableDeclaration
 	: VAR ModifiablePrimary COLON Type {$$ = new ParserVal(new Node("variable-declaration", null, Arrays.asList($2.obj, $4.obj)));}
 	| VAR ModifiablePrimary COLON Type IS Expression {$$ = new ParserVal(new Node("variable-declaration", null, Arrays.asList($2.obj, $4.obj, $6.obj)));}
 	| VAR ModifiablePrimary IS Expression {$$ = new ParserVal(new Node("variable-declaration", null, Arrays.asList($2.obj, $4.obj)));}
+	| FUNC ModifiablePrimary COLON Type IS LEFT_PAREN Parameters RIGHT_PAREN ARROW LEFT_BRACE Body RIGHT_BRACE {$$ = new ParserVal(new Node("function-variable-declaration", null, Arrays.asList($2.obj, $4.obj)));}
 	;
 
 FunctionDeclaration
 	: FunctionKeyword Identifier LEFT_PAREN RIGHT_PAREN IS Body END {$$ = new ParserVal(new Node("function-declaration", null, Arrays.asList($2.obj,new Node("parameters", null), $6.obj)));}
-	| FunctionKeyword Identifier LEFT_PAREN ParameterDeclaration RIGHT_PAREN IS Body END {$$ = new ParserVal(new Node("function-declaration", null, Arrays.asList($2.obj,new Node("arguments", null, Arrays.asList($4.obj)), $7.obj)));}
+	| FunctionKeyword Identifier LEFT_PAREN ParameterDeclaration RIGHT_PAREN IS Body END {$$ = new ParserVal(new Node("function-declaration", null, Arrays.asList($2.obj,new Node("parameters", null, Arrays.asList($4.obj)), $7.obj)));}
 	| FunctionKeyword Identifier LEFT_PAREN Parameters RIGHT_PAREN IS Body END {$$ = new ParserVal(new Node("function-declaration", null, Arrays.asList($2.obj, $4.obj, $7.obj)));}
 	| FunctionKeyword Identifier LEFT_PAREN RIGHT_PAREN COLON Type IS Body END {$$ = new ParserVal(new Node("function-declaration", null, Arrays.asList($2.obj,new Node("parameters", null, Arrays.asList($1.obj)), $6.obj,$8.obj)));}
-	| FunctionKeyword Identifier LEFT_PAREN ParameterDeclaration RIGHT_PAREN COLON Type IS Body END {$$ = new ParserVal(new Node("function-declaration", null, Arrays.asList($2.obj, new Node("arguments", null, Arrays.asList($4.obj)),$7.obj,$9.obj)));}
+	| FunctionKeyword Identifier LEFT_PAREN ParameterDeclaration RIGHT_PAREN COLON Type IS Body END {$$ = new ParserVal(new Node("function-declaration", null, Arrays.asList($2.obj, new Node("parameters", null, Arrays.asList($4.obj)),$7.obj,$9.obj)));}
 	| FunctionKeyword Identifier LEFT_PAREN Parameters RIGHT_PAREN COLON Type IS Body END {$$ = new ParserVal(new Node("function-declaration", null, Arrays.asList($2.obj, $4.obj,$7.obj,$9.obj)));}
 	;
 
