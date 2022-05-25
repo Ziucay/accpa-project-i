@@ -5,7 +5,8 @@ import parser.Node;
 import java.util.Objects;
 
 public class Interpreter {
-    public Interpreter() {}
+    public Interpreter() {
+    }
 
     public void traverseTree(Node root) {
         Block global = new Block();
@@ -35,7 +36,37 @@ public class Interpreter {
 
     public Object traverse(Node node, Block block) {
         Object left, right, result;
+        for (Node child :
+                node.descendants) {
+            if (Objects.equals(child.identifier, "function-declaration")) {
+                Block blocked = new Block(block);
+                block.createFunction(child.descendants.get(0).identifier, child.descendants.get(3), child.descendants.get(2).identifier, blocked);
+                FunctionValue func = block.getFunctionValue(child.descendants.get(0).identifier);
+                if (child.descendants.get(1).descendants != null)
+                    for (Node parameter :
+                            child.descendants.get(1).descendants) {
+                        if (parameter == null)
+                            break;
+                        blocked.createVariable(parameter.descendants.get(0).identifier, parameter.descendants.get(1).identifier);
+                        func.addParameterIdentifier(parameter.descendants.get(0).identifier);
+                    }
+            }
+        }
         switch (node.identifier) {
+            case "function-declaration":
+                return null;
+            case "function-expression":
+                Block blocked = new Block(block);
+                block.createFunction(node.descendants.get(0).identifier, node.descendants.get(3), node.descendants.get(2).identifier, blocked);
+                FunctionValue funced = block.getFunctionValue(node.descendants.get(0).identifier);
+                if (node.descendants.get(1).descendants != null)
+                    for (Node parameter :
+                            node.descendants.get(1).descendants) {
+                        if (parameter == null)
+                            break;
+                        blocked.createVariable(parameter.descendants.get(0).identifier, parameter.descendants.get(1).identifier);
+                        funced.addParameterIdentifier(parameter.descendants.get(0).identifier);
+                    }
             case "plus":
                 left = traverse(node.descendants.get(0), block);
                 right = traverse(node.descendants.get(1), block);
@@ -252,8 +283,7 @@ public class Interpreter {
                 } else {
                     if (conditionCheck) {
                         result = traverse(node.descendants.get(1), ifBlock);
-                    }
-                    else {
+                    } else {
                         result = traverse(node.descendants.get(2), ifBlock);
                     }
                     if (result instanceof ReturnObject) {
@@ -265,6 +295,7 @@ public class Interpreter {
                 result = traverse(node.descendants.get(0), block);
                 return new ReturnObject(result);
             case "function-call":
+                System.out.println("hello");
                 FunctionValue func = new FunctionValue(block.getFunctionValue(node.descendants.get(0).identifier));
                 Block funcBlock = new Block();
                 funcBlock.cloneBlock(func.block);
@@ -274,7 +305,12 @@ public class Interpreter {
                     funcBlock.assignVariable(parameter, traverse(node.descendants.get(1).descendants.get(parameterCounter), block));
                     parameterCounter++;
                 }
-                return traverse(func.body, funcBlock);
+                Object resulted = traverse(func.body, funcBlock);
+                if (resulted == null) {
+                    return null;
+                } else {
+                    return ((ReturnObject) resulted).returnValue;
+                }
             case "variable-declaration":
                 if (node.descendants.size() == 2) {
                     block.createVariable(node.descendants.get(0).identifier, (String) node.descendants.get(1).value);
@@ -324,8 +360,7 @@ public class Interpreter {
             default:
                 if (block.isVariable(node.identifier)) {
                     return block.getVariableValue(node.identifier);
-                }
-                else {
+                } else {
                     return node.value;
                 }
         }

@@ -11,7 +11,7 @@ import java.util.List;
 public class CompilerTest {
 
     private static final String LOCALE = "UTF-8";
-    private static final Boolean IS_PARSER_PRINTS_DEBUG = true;
+    private static final Boolean IS_PARSER_PRINTS_DEBUG = false;
 
     StringBufferInputStream stream;
     Reader reader;
@@ -237,14 +237,14 @@ public class CompilerTest {
     }
 
     @Test
-    public void recursion() throws IOException {
+    public void recursion() throws Exception {
 
         final String text = """
                 function main() : void is
                     recursion(10)
                 end
                 
-                function recursion (a : int) : void is
+                function recursion (a : auto) : auto is
                     print a
                     if a > 0 then
                         recursion(a - 1)
@@ -267,6 +267,9 @@ public class CompilerTest {
         parser.setTokens(lexer.tokens);
         parser.run();
 
+        TypeChecker checker = new TypeChecker();
+        checker.check(parser.root);
+
         assertTrue(parser.errors == 0);
 
         System.out.println("Built AST tree: ");
@@ -277,7 +280,7 @@ public class CompilerTest {
     }
 
     @Test
-    public void twoFunctionsWithSameName() throws IOException {
+    public void twoFunctionsWithSameName() throws Exception {
 
         final String text = """
                 function main () : void is
@@ -308,6 +311,9 @@ public class CompilerTest {
         parser.setTokens(lexer.tokens);
         parser.run();
 
+        TypeChecker checker = new TypeChecker();
+        checker.check(parser.root);
+
         assertTrue(parser.errors == 0);
 
         System.out.println("Built AST tree: ");
@@ -319,7 +325,7 @@ public class CompilerTest {
 
 
     @Test
-    public void twoFunctionsWithFullAuto() throws IOException {
+    public void twoFunctionsWithFullAuto() throws Exception {
 
         final String text = """
                 function main () : auto is
@@ -346,6 +352,9 @@ public class CompilerTest {
 
         parser.setTokens(lexer.tokens);
         parser.run();
+
+        TypeChecker checker = new TypeChecker();
+        checker.check(parser.root);
 
         assertTrue(parser.errors == 0);
 
@@ -393,7 +402,7 @@ public class CompilerTest {
     }
 
     @Test
-    public void imports() throws IOException {
+    public void imports() throws Exception {
 
         final String text = """
                 import "math"
@@ -405,6 +414,8 @@ public class CompilerTest {
                 end
                 
                 function sum (a : auto, b : auto) : auto is
+                    return a + b
+                    print a + b
                     return a + b
                 end""";
 
@@ -437,6 +448,62 @@ public class CompilerTest {
 
         parser.setTokens(lexer.tokens);
         parser.run();
+
+        TypeChecker checker = new TypeChecker();
+        checker.check(parser.root);
+
+        assertTrue(parser.errors == 0);
+
+        System.out.println("Built AST tree: ");
+        System.out.println(parser.root.toString());
+
+        System.out.println("Interpreter output: ");
+        interpreter.traverseTree(parser.root);
+    }
+
+    @Test
+    public void nested() throws Exception {
+
+        final String text = """
+                function main () : auto is
+                    function sum (a : auto, b : auto) : auto is
+                        print a + b
+                    end
+                    sum(1, 2)
+                end""";
+
+        initLexer(text);
+        initParser();
+        initInterpreter();
+
+        int result = lexer.yylex();
+
+        assertEquals(0, result);
+
+        Importer importer = new Importer();
+        List<String> additionalSources = importer.getSourcesFromTokens(lexer.tokens);
+
+        String newText = text + "\n";
+        for (String s: additionalSources) {
+            newText = newText + s;
+        }
+
+        initLexer(newText);
+
+        System.out.println(newText);
+
+        int newResult = lexer.yylex();
+
+        assertEquals(0, newResult);
+
+        System.out.println("Lexer tokens: ");
+        System.out.println(lexer.tokens);
+
+        parser.setTokens(lexer.tokens);
+        parser.run();
+
+        TypeChecker checker = new TypeChecker();
+        checker.check(parser.root);
 
         assertTrue(parser.errors == 0);
 
