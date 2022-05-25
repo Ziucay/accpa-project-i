@@ -379,4 +379,38 @@ public class CompilerTest {
         interpreter.traverseTree(parser.root, startingFunction);
     }
 
+    @Test
+    public void type() throws IOException {
+
+        final String startingFunction = "main";
+        final String text = """
+                type Name is string
+                
+                function main () : void is
+                    var s : Name is "dsadas"
+                    print s
+                end""";
+
+        initLexer(text);
+        initParser();
+        initInterpreter();
+
+        int result = lexer.yylex();
+
+        assertEquals(0, result);
+
+        System.out.println(lexer.tokens);
+
+        parser.setTokens(lexer.tokens);
+        parser.run();
+
+        assertTrue(parser.errors == 0);
+
+        System.out.println("Built AST tree: ");
+        System.out.println(parser.root.toString());
+
+        System.out.println("Interpreter output: ");
+        interpreter.traverseTree(parser.root, startingFunction);
+    }
+
 }
