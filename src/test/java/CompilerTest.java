@@ -11,7 +11,7 @@ import java.util.List;
 public class CompilerTest {
 
     private static final String LOCALE = "UTF-8";
-    private static final Boolean IS_PARSER_PRINTS_DEBUG = true;
+    private static final Boolean IS_PARSER_PRINTS_DEBUG = false;
 
     StringBufferInputStream stream;
     Reader reader;
