@@ -67,6 +67,8 @@ import java.util.*;
 %token DOUBLE
 %token ARROW
 %token FUNC
+%token AUTO
+%token VOID
 
 %left PLUS
 %left MINUS
@@ -91,20 +93,23 @@ Line    : VariableDeclaration {root.descendants.add($1.obj);}
 	;
 
 ArrayDeclaration
-	: ARRAY Identifier COLON Type EQUAL LEFT_SQUARE_BRACE Expression RIGHT_SQUARE_BRACE { $$ = new ParserVal(new Node("array-declaration", null, Arrays.asList($2.obj, $4.obj, $7.obj)));}
+	: TYPE_ARRAY Identifier COLON Type EQUAL LEFT_SQUARE_BRACE Expression RIGHT_SQUARE_BRACE { $$ = new ParserVal(new Node("array-declaration", null, Arrays.asList($2.obj, $4.obj, $7.obj)));}
+	;
+
+ArrayAccess
+	: Identifier LEFT_SQUARE_BRACE Expression RIGHT_SQUARE_BRACE {$$ = new ParserVal(new Node("array-access", null, Arrays.asList($1.obj, $3.obj)));}
+	;
 
 VariableDeclaration
 	: VAR ModifiablePrimary COLON Type {$$ = new ParserVal(new Node("variable-declaration", null, Arrays.asList($2.obj, $4.obj)));}
 	| VAR ModifiablePrimary COLON Type IS Expression {$$ = new ParserVal(new Node("variable-declaration", null, Arrays.asList($2.obj, $4.obj, $6.obj)));}
-	| VAR ModifiablePrimary IS Expression {$$ = new ParserVal(new Node("variable-declaration", null, Arrays.asList($2.obj, $4.obj)));}
-	| FUNC ModifiablePrimary COLON Type IS LEFT_PAREN Parameters RIGHT_PAREN ARROW LEFT_BRACE Body RIGHT_BRACE {$$ = new ParserVal(new Node("function-variable-declaration", null, Arrays.asList($2.obj, $4.obj)));}
+	| FUNC ModifiablePrimary COLON Type IS LEFT_PAREN RIGHT_PAREN ARROW LEFT_BRACE Body RIGHT_BRACE {$$ = new ParserVal(new Node("function-expression", null, Arrays.asList($2.obj,new Node("parameters", null), $4.obj, $10.obj)));}
+	| FUNC ModifiablePrimary COLON Type IS LEFT_PAREN ParameterDeclaration RIGHT_PAREN ARROW LEFT_BRACE Body RIGHT_BRACE {$$ = new ParserVal(new Node("function-expression", null, Arrays.asList($2.obj,new Node("parameters", null, Arrays.asList($7.obj)),$4.obj, $11.obj)));}
+	| FUNC ModifiablePrimary COLON Type IS LEFT_PAREN Parameters RIGHT_PAREN ARROW LEFT_BRACE Body RIGHT_BRACE {$$ = new ParserVal(new Node("function-expression", null, Arrays.asList($2.obj,$7.obj, $4.obj, $11.obj)));}
 	;
 
 FunctionDeclaration
-	: FunctionKeyword Identifier LEFT_PAREN RIGHT_PAREN IS Body END {$$ = new ParserVal(new Node("function-declaration", null, Arrays.asList($2.obj,new Node("parameters", null), $6.obj)));}
-	| FunctionKeyword Identifier LEFT_PAREN ParameterDeclaration RIGHT_PAREN IS Body END {$$ = new ParserVal(new Node("function-declaration", null, Arrays.asList($2.obj,new Node("parameters", null, Arrays.asList($4.obj)), $7.obj)));}
-	| FunctionKeyword Identifier LEFT_PAREN Parameters RIGHT_PAREN IS Body END {$$ = new ParserVal(new Node("function-declaration", null, Arrays.asList($2.obj, $4.obj, $7.obj)));}
-	| FunctionKeyword Identifier LEFT_PAREN RIGHT_PAREN COLON Type IS Body END {$$ = new ParserVal(new Node("function-declaration", null, Arrays.asList($2.obj,new Node("parameters", null, Arrays.asList($1.obj)), $6.obj,$8.obj)));}
+	: FunctionKeyword Identifier LEFT_PAREN RIGHT_PAREN COLON Type IS Body END {$$ = new ParserVal(new Node("function-declaration", null, Arrays.asList($2.obj,new Node("parameters", null, Arrays.asList($1.obj)), $6.obj,$8.obj)));}
 	| FunctionKeyword Identifier LEFT_PAREN ParameterDeclaration RIGHT_PAREN COLON Type IS Body END {$$ = new ParserVal(new Node("function-declaration", null, Arrays.asList($2.obj, new Node("parameters", null, Arrays.asList($4.obj)),$7.obj,$9.obj)));}
 	| FunctionKeyword Identifier LEFT_PAREN Parameters RIGHT_PAREN COLON Type IS Body END {$$ = new ParserVal(new Node("function-declaration", null, Arrays.asList($2.obj, $4.obj,$7.obj,$9.obj)));}
 	;
@@ -122,6 +127,8 @@ Type
 	: TYPE_INT {$$ = new ParserVal(new Node("type-integer", null));}
 	| TYPE_DOUBLE {$$ = new ParserVal(new Node("type-real", null));}
 	| TYPE_BOOLEAN {$$ = new ParserVal(new Node("type-boolean", null));}
+	| VOID {$$ = new ParserVal(new Node("void", null));}
+	| AUTO {$$ = new ParserVal(new Node("auto", null));}
 	;
 
 Body
@@ -141,6 +148,8 @@ Statement
 	| VariableDeclaration {$$ = $1; blockStack.peek().add($1.obj);}
 	| Return {$$ = $1; blockStack.peek().add($1.obj);}
 	| Print {$$ = $1; blockStack.peek().add($1.obj);}
+	| ArrayDeclaration {$$ = $1; blockStack.peek().add($1.obj);}
+	| ArrayAccess {$$ = $1; blockStack.peek().add($1.obj);} 	
 	;
 
 Print

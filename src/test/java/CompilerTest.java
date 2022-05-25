@@ -232,11 +232,11 @@ public class CompilerTest {
         final String startingFunction = "main";
         final String text = """
                 
-                function main() is
+                function main() : void is
                     recursion(10)
                 end
                 
-                function recursion (a : int) is             
+                function recursion (a : int) : void is
                     print a
                     if a > 0 then
                         recursion(a - 1)
@@ -254,7 +254,7 @@ public class CompilerTest {
         System.out.println("Lexer tokens: ");
         System.out.println(lexer.tokens);
 
-        assertEquals(34,lexer.tokens.size());
+        assertEquals(38,lexer.tokens.size());
 
         parser.setTokens(lexer.tokens);
         parser.run();
@@ -271,10 +271,10 @@ public class CompilerTest {
     @Test
     public void array() throws IOException {
 
-        final String startingFunction = "array";
+        final String startingFunction = "arrayTest";
         final String text = """
-                function array (a : int) is
-                    array Identifier : int = [a]
+                function arrayTest (a : int) : void is
+                    array testArray : int = [a]
                     a[0] = 1
                     a[1] = 3
                     print a[0]
@@ -291,7 +291,49 @@ public class CompilerTest {
         System.out.println("Lexer tokens: ");
         System.out.println(lexer.tokens);
 
-        assertEquals(35,lexer.tokens.size());
+        assertEquals(37,lexer.tokens.size());
+
+        parser.setTokens(lexer.tokens);
+        parser.run();
+
+        assertTrue(parser.errors == 0);
+
+        System.out.println("Built AST tree: ");
+        System.out.println(parser.root.toString());
+
+        System.out.println("Interpreter output: ");
+        interpreter.traverseTree(parser.root, startingFunction);
+    }
+
+    @Test
+    public void twoFunctionsWithSameName() throws IOException {
+
+        final String startingFunction = "main";
+        final String text = """
+                function main () : void is
+                    identical()
+                end
+                
+                function identical () : void is
+                    print 1
+                end
+                
+                function identical () : void is
+                    print 2
+                end""";
+
+        initLexer(text);
+        initParser();
+        initInterpreter();
+
+        int result = lexer.yylex();
+
+        assertEquals(0, result);
+
+        System.out.println("Lexer tokens: ");
+        System.out.println(lexer.tokens);
+
+        assertEquals(32,lexer.tokens.size());
 
         parser.setTokens(lexer.tokens);
         parser.run();

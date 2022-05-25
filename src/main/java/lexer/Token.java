@@ -201,6 +201,19 @@ public class Token {
             case DOUBLE -> {
                 return 315;
             }
+            case ARROW -> {
+                return 316;
+            }
+            case FUNC -> {
+                return 317;
+            }
+            case AUTO -> {
+                return 318;
+            }
+            case VOID -> {
+                return 319;
+            }
+
         }
 
         return 0;
