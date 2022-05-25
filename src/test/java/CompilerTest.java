@@ -11,7 +11,7 @@ import java.util.List;
 public class CompilerTest {
 
     private static final String LOCALE = "UTF-8";
-    private static final Boolean IS_PARSER_PRINTS_DEBUG = false;
+    private static final Boolean IS_PARSER_PRINTS_DEBUG = true;
 
     StringBufferInputStream stream;
     Reader reader;
@@ -357,6 +357,42 @@ public class CompilerTest {
     }
 
     @Test
+    public void loop() throws IOException {
+
+        final String text = """
+                function main () : void is
+                    var a : auto is 0
+                    for a in 0..10 loop
+                        print a
+                    end
+                end""";
+
+        initLexer(text);
+        initParser();
+        initInterpreter();
+
+        int result = lexer.yylex();
+
+        assertEquals(0, result);
+
+        System.out.println("Lexer tokens: ");
+        System.out.println(lexer.tokens);
+
+        assertEquals(25,lexer.tokens.size());
+
+        parser.setTokens(lexer.tokens);
+        parser.run();
+
+        assertTrue(parser.errors == 0);
+
+        System.out.println("Built AST tree: ");
+        System.out.println(parser.root.toString());
+
+        System.out.println("Interpreter output: ");
+        interpreter.traverseTree(parser.root);
+    }
+
+    @Test
     public void imports() throws IOException {
 
         final String text = """
@@ -369,7 +405,7 @@ public class CompilerTest {
                 end
                 
                 function sum (a : auto, b : auto) : auto is
-                    print a + b
+                    return a + b
                 end""";
 
         initLexer(text);
