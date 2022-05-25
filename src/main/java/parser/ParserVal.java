@@ -56,6 +56,7 @@ public class ParserVal {
             case BOOL -> bval = false;
             case INT -> ival = 0;
             case DOUBLE -> dval = 0.0;
+            case STRING -> sval = "";
         }
     }
 
@@ -66,6 +67,8 @@ public class ParserVal {
             return dval.toString();
         if (type == ParserValType.INT)
             return ival.toString();
+        if (type == ParserValType.INT)
+            return sval;
 
         throw new IllegalStateException("Unsupported types");
     }
