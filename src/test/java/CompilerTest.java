@@ -9,7 +9,7 @@ import java.io.*;
 public class CompilerTest {
 
     private static final String LOCALE = "UTF-8";
-    private static final Boolean IS_PARSER_PRINTS_DEBUG = true;
+    private static final Boolean IS_PARSER_PRINTS_DEBUG = false;
 
     StringBufferInputStream stream;
     Reader reader;
@@ -411,6 +411,35 @@ public class CompilerTest {
 
         System.out.println("Interpreter output: ");
         interpreter.traverseTree(parser.root, startingFunction);
+    }
+
+    @Test
+    public void importer() throws IOException {
+        Importer importer = new Importer();
+
+        final String startingFunction = "main";
+        final String text = """
+                type Name is string
+                import "lalalala"
+                import "azazazazz"
+                
+                function main () : void is
+                    var s : Name is "dsadas"
+                    print s
+                end""";
+
+        initLexer(text);
+        initParser();
+        initInterpreter();
+
+        int result = lexer.yylex();
+
+        assertEquals(0, result);
+
+        importer.tokens = lexer.tokens;
+
+        System.out.println(importer.extractSourcesFromTokens());
+        System.out.println(lexer.tokens);
     }
 
 }

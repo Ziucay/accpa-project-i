@@ -213,6 +213,9 @@ public class Token {
             case VOID -> {
                 return 319;
             }
+            case IMPORT -> {
+                return 320;
+            }
 
         }
 
