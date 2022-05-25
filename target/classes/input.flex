@@ -21,6 +21,10 @@ Integer = -?[0-9]+
 Double = -?[0-9]+.[0-9]+
 Identifier = [a-zA-Z]+[a-zA-Z0-9_]+
 String = \"([^\\\"]|\\.)*\"
+
+InputCharacter = [^\r\n]
+Comment = "//" {InputCharacter}* {Newline}?
+
 %{
 public List<Token> tokens = new ArrayList();
 %}
@@ -30,6 +34,8 @@ public List<Token> tokens = new ArrayList();
 {Newline} {yyline++;}
 
 {Whitespace} {}
+
+{Comment} {}
 
 "(" {tokens.add(new Token(TokenType.LEFT_PAREN, "(", null, yyline, yycolumn));}
 
@@ -121,7 +127,15 @@ public List<Token> tokens = new ArrayList();
 
 "func" {tokens.add(new Token(TokenType.FUNC, "func", null, yyline, yycolumn));}
 
-"type" {tokens.add(new Token(TokenType.TYPE, "func", null, yyline, yycolumn));}
+"type" {tokens.add(new Token(TokenType.TYPE, "type", null, yyline, yycolumn));}
+
+"loop" {tokens.add(new Token(TokenType.LOOP, "loop", null, yyline, yycolumn));}
+
+"for" {tokens.add(new Token(TokenType.FOR, "for", null, yyline, yycolumn));}
+
+"in" {tokens.add(new Token(TokenType.IN, "in", null, yyline, yycolumn));}
+
+"while" {tokens.add(new Token(TokenType.WHILE, "while", null, yyline, yycolumn));}
 
 {Integer} {tokens.add(new Token(TokenType.INTEGER, yytext(), null, yyline, yycolumn));}
 

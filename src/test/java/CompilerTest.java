@@ -406,16 +406,14 @@ public class CompilerTest {
 
         final String text = """
                 import "math"
-                
-                function main () : auto is
-                    var a : auto is 8 + 5.1
+                //This is a single line comment
+                function main () : void is
+                    var a : auto is 8 + 5
                     print sum(a, 5)
                     print multiplication(a,5)
                 end
                 
                 function sum (a : auto, b : auto) : auto is
-                    return a + b
-                    print a + b
                     return a + b
                 end""";
 

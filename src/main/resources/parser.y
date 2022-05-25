@@ -159,6 +159,7 @@ Statement
 	| ForLoop {$$ = $1; blockStack.peek().add($1.obj);}
 	| IfStatement {$$ = $1; blockStack.peek().add($1.obj);}
 	| VariableDeclaration {$$ = $1; blockStack.peek().add($1.obj);}
+	| FunctionDeclaration {$$ = $1; blockStack.peek().add($1.obj);}
 	| Return {$$ = $1; blockStack.peek().add($1.obj);}
 	| Print {$$ = $1; blockStack.peek().add($1.obj);}
 	| ArrayDeclaration {$$ = $1; blockStack.peek().add($1.obj);}	
