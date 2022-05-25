@@ -7,7 +7,7 @@ import java.util.Objects;
 public class Interpreter {
     public Interpreter() {}
 
-    public void traverseTree(Node root, String startFunction) {
+    public void traverseTree(Node root) {
         Block global = new Block();
         for (Node child :
                 root.descendants) {
@@ -25,8 +25,8 @@ public class Interpreter {
         }
         for (Node child :
                 root.descendants) {
-            if (Objects.equals(child.descendants.get(0).identifier, startFunction)) {
-                FunctionValue func = global.getFunctionValue(startFunction);
+            if (Objects.equals(child.descendants.get(0).identifier, "main")) {
+                FunctionValue func = global.getFunctionValue("main");
                 traverse(func.body, func.block);
                 break;
             }
@@ -39,81 +39,150 @@ public class Interpreter {
             case "plus":
                 left = traverse(node.descendants.get(0), block);
                 right = traverse(node.descendants.get(1), block);
+                if (left instanceof String && right instanceof String) {
+                    return (String) left + (String) right;
+                }
                 if (left instanceof Integer) {
-                    return (int) left + (int) right;
+                    if (right instanceof Integer) {
+                        return (int) left + (int) right;
+                    }
+                    return (int) left + (double) right;
                 } else {
+                    if (right instanceof Integer) {
+                        return (double) left + (int) right;
+                    }
                     return (double) left + (double) right;
                 }
             case "minus":
                 left = traverse(node.descendants.get(0), block);
                 right = traverse(node.descendants.get(1), block);
                 if (left instanceof Integer) {
-                    return (int) left - (int) right;
+                    if (right instanceof Integer) {
+                        return (int) left - (int) right;
+                    }
+                    return (int) left - (double) right;
                 } else {
+                    if (right instanceof Integer) {
+                        return (double) left - (int) right;
+                    }
                     return (double) left - (double) right;
                 }
             case "multiply":
                 left = traverse(node.descendants.get(0), block);
                 right = traverse(node.descendants.get(1), block);
                 if (left instanceof Integer) {
-                    return (int) left * (int) right;
+                    if (right instanceof Integer) {
+                        return (int) left * (int) right;
+                    }
+                    return (int) left * (double) right;
                 } else {
+                    if (right instanceof Integer) {
+                        return (double) left * (int) right;
+                    }
                     return (double) left * (double) right;
                 }
             case "divide":
                 left = traverse(node.descendants.get(0), block);
                 right = traverse(node.descendants.get(1), block);
                 if (left instanceof Integer) {
-                    return (int) left / (int) right;
+                    if (right instanceof Integer) {
+                        return (int) left / (int) right;
+                    }
+                    return (int) left / (double) right;
                 } else {
+                    if (right instanceof Integer) {
+                        return (double) left / (int) right;
+                    }
                     return (double) left / (double) right;
                 }
             case "more":
                 left = traverse(node.descendants.get(0), block);
                 right = traverse(node.descendants.get(1), block);
                 if (left instanceof Integer) {
-                    return (int) left > (int) right;
+                    if (right instanceof Integer) {
+                        return (int) left > (int) right;
+                    }
+                    return (int) left > (double) right;
                 } else {
+                    if (right instanceof Integer) {
+                        return (double) left > (int) right;
+                    }
                     return (double) left > (double) right;
                 }
             case "more or equal":
                 left = traverse(node.descendants.get(0), block);
                 right = traverse(node.descendants.get(1), block);
                 if (left instanceof Integer) {
-                    return (int) left >= (int) right;
+                    if (right instanceof Integer) {
+                        return (int) left >= (int) right;
+                    }
+                    return (int) left >= (double) right;
                 } else {
+                    if (right instanceof Integer) {
+                        return (double) left >= (int) right;
+                    }
                     return (double) left >= (double) right;
                 }
             case "equal":
                 left = traverse(node.descendants.get(0), block);
                 right = traverse(node.descendants.get(1), block);
+                if (left instanceof String && right instanceof String) {
+                    return ((String) left).equals((String) right);
+                }
                 if (left instanceof Integer) {
-                    return (int) left == (int) right;
+                    if (right instanceof Integer) {
+                        return (int) left == (int) right;
+                    }
+                    return (int) left == (double) right;
                 } else {
+                    if (right instanceof Integer) {
+                        return (double) left == (int) right;
+                    }
                     return (double) left == (double) right;
                 }
             case "less":
                 left = traverse(node.descendants.get(0), block);
                 right = traverse(node.descendants.get(1), block);
                 if (left instanceof Integer) {
-                    return (int) left < (int) right;
+                    if (right instanceof Integer) {
+                        return (int) left < (int) right;
+                    }
+                    return (int) left < (double) right;
                 } else {
+                    if (right instanceof Integer) {
+                        return (double) left < (int) right;
+                    }
                     return (double) left < (double) right;
                 }
             case "less or equal":
                 left = traverse(node.descendants.get(0), block);
                 right = traverse(node.descendants.get(1), block);
                 if (left instanceof Integer) {
-                    return (int) left <= (int) right;
+                    if (right instanceof Integer) {
+                        return (int) left <= (int) right;
+                    }
+                    return (int) left <= (double) right;
                 } else {
+                    if (right instanceof Integer) {
+                        return (double) left <= (int) right;
+                    }
                     return (double) left <= (double) right;
                 }
             case "not equal":
                 left = traverse(node.descendants.get(0), block);
                 right = traverse(node.descendants.get(1), block);
+                if (left instanceof String && right instanceof String) {
+                    return !((String) left).equals((String) right);
+                }
                 if (left instanceof Integer) {
-                    return (int) left != (int) right;
+                    if (right instanceof Integer) {
+                        return (int) left != (int) right;
+                    }
+                    return (int) left != (double) right;
                 } else {
+                    if (right instanceof Integer) {
+                        return (double) left != (int) right;
+                    }
                     return (double) left != (double) right;
                 }
             case "or":
@@ -211,11 +280,40 @@ public class Interpreter {
                     block.createVariable(node.descendants.get(0).identifier, (String) node.descendants.get(1).value);
                 } else if (node.descendants.size() == 3) {
                     result = traverse(node.descendants.get(2), block);
-                    block.createVariable(node.descendants.get(0).identifier, result, (String) node.descendants.get(1).value);
+                    switch (node.descendants.get(1).identifier) {
+                        case "type-integer":
+                            result = (int) result;
+                            break;
+                        case "type-double":
+                            result = (double) result;
+                            break;
+                        case "type-string":
+                            result = (String) result;
+                            break;
+                        case "type-boolean":
+                            result = (boolean) result;
+                            break;
+                    }
+                    block.createVariable(node.descendants.get(0).identifier, result, node.descendants.get(1).identifier);
                 }
                 return null;
             case "assignment":
-                block.assignVariable(node.descendants.get(0).identifier, traverse(node.descendants.get(1), block));
+                result = traverse(node.descendants.get(1), block);
+                switch (block.getVariableType(node.descendants.get(0).identifier)) {
+                    case "type-integer":
+                        result = (int) result;
+                        break;
+                    case "type-double":
+                        result = (double) result;
+                        break;
+                    case "type-string":
+                        result = (String) result;
+                        break;
+                    case "type-boolean":
+                        result = (boolean) result;
+                        break;
+                }
+                block.assignVariable(node.descendants.get(0).identifier, result);
                 return null;
             case "print":
                 System.out.println(traverse(node.descendants.get(0), block));

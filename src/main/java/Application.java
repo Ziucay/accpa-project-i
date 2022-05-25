@@ -34,7 +34,7 @@ public class Application {
             System.out.println("Program execution starts");
 
             Interpreter interpreter = new Interpreter();
-            interpreter.traverseTree(parser.root, argv[1]);
+            interpreter.traverseTree(parser.root);
         }
         catch (java.io.FileNotFoundException e) {
             System.out.println("File not found : \""+filename+"\"");

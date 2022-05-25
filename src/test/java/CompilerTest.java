@@ -1,3 +1,4 @@
+import checker.TypeChecker;
 import interpreter.Interpreter;
 import lexer.Lexer;
 import org.junit.jupiter.api.Test;
@@ -44,11 +45,10 @@ public class CompilerTest {
     }
 
     @Test
-    public void simpleFunction() throws IOException {
+    public void simpleFunction() throws Exception {
 
-        final String startingFunction = "Aaa";
         final String text = """
-                function Aaa () : int is
+                function main () : void is
                     var a : int is 8
                     print 1 + a
                 end""";
@@ -69,19 +69,21 @@ public class CompilerTest {
         parser.setTokens(lexer.tokens);
         parser.run();
 
+        TypeChecker checker = new TypeChecker();
+        checker.check(parser.root);
+
         assertTrue(parser.errors == 0);
 
         System.out.println("Built AST tree: ");
         System.out.println(parser.root.toString());
 
         System.out.println("Interpreter output: ");
-        interpreter.traverseTree(parser.root, startingFunction);
+        interpreter.traverseTree(parser.root);
     }
 
     @Test
     public void oneFunctionParseError() throws IOException {
 
-        final String startingFunction = "Aaa";
         final String text = """
                 function Aaa () : int is
                     print 1 +
@@ -109,22 +111,20 @@ public class CompilerTest {
         System.out.println(parser.root.toString());
 
         System.out.println("Interpreter output: ");
-        interpreter.traverseTree(parser.root, startingFunction);
+        interpreter.traverseTree(parser.root);
     }
 
     @Test
-    public void twoFunctions() throws IOException {
+    public void twoFunctions() throws Exception {
 
-        final String startingFunction = "Aaa";
         final String text = """
-                function Aaa () : int is
+                function main () : void is
                     var b : int is 8 + 7
                     print b
                     Bbb ()
-                                
                 end
                                 
-                function Bbb () : int is
+                function Bbb () : void is
                     var a : int is 8 + 5
                     print a
                 end""";
@@ -145,25 +145,27 @@ public class CompilerTest {
         parser.setTokens(lexer.tokens);
         parser.run();
 
+        TypeChecker checker = new TypeChecker();
+        checker.check(parser.root);
+
         assertTrue(parser.errors == 0);
 
         System.out.println("Built AST tree: ");
         System.out.println(parser.root.toString());
 
         System.out.println("Interpreter output: ");
-        interpreter.traverseTree(parser.root, startingFunction);
+        interpreter.traverseTree(parser.root);
     }
 
     @Test
-    public void twoFunctionsWithParameters() throws IOException {
+    public void twoFunctionsWithParameters() throws Exception {
 
-        final String startingFunction = "Aaa";
         final String text = """
-                function sum (a : int, b : int) : int is
+                function sum (a : int, b : int) : void is
                     print a + b
                 end
                                 
-                function Aaa () : int is
+                function main () : void is
                     sum(10, 27)
                 end""";
 
@@ -183,22 +185,26 @@ public class CompilerTest {
         parser.setTokens(lexer.tokens);
         parser.run();
 
+        TypeChecker checker = new TypeChecker();
+        checker.check(parser.root);
+
         assertTrue(parser.errors == 0);
 
         System.out.println("Built AST tree: ");
         System.out.println(parser.root.toString());
 
         System.out.println("Interpreter output: ");
-        interpreter.traverseTree(parser.root, startingFunction);
+        interpreter.traverseTree(parser.root);
     }
 
     @Test
-    public void oneParameterFunction() throws IOException {
+    public void auto() throws Exception {
 
-        final String startingFunction = "printInt";
         final String text = """
-                function printInt (a : int) : int is
-                    print a
+                function main () : auto is
+                    var a : auto is 8 + 5.1
+                    var b : auto is a + a + 5
+                    print b
                 end""";
 
         initLexer(text);
@@ -212,10 +218,13 @@ public class CompilerTest {
         System.out.println("Lexer tokens: ");
         System.out.println(lexer.tokens);
 
-        assertEquals(14,lexer.tokens.size());
+        assertEquals(29,lexer.tokens.size());
 
         parser.setTokens(lexer.tokens);
         parser.run();
+
+        TypeChecker checker = new TypeChecker();
+        checker.check(parser.root);
 
         assertTrue(parser.errors == 0);
 
@@ -223,15 +232,13 @@ public class CompilerTest {
         System.out.println(parser.root.toString());
 
         System.out.println("Interpreter output: ");
-        interpreter.traverseTree(parser.root, startingFunction);
+        interpreter.traverseTree(parser.root);
     }
 
     @Test
     public void recursion() throws IOException {
 
-        final String startingFunction = "main";
         final String text = """
-                
                 function main() : void is
                     recursion(10)
                 end
@@ -265,50 +272,12 @@ public class CompilerTest {
         System.out.println(parser.root.toString());
 
         System.out.println("Interpreter output: ");
-        interpreter.traverseTree(parser.root, startingFunction);
-    }
-
-    @Test
-    public void array() throws IOException {
-
-        final String startingFunction = "arrayTest";
-        final String text = """
-                function arrayTest (a : int) : void is
-                    array testArray : int = [a]
-                    a[0] = 1
-                    a[1] = 3
-                    print a[0]
-                end""";
-
-        initLexer(text);
-        initParser();
-        initInterpreter();
-
-        int result = lexer.yylex();
-
-        assertEquals(0, result);
-
-        System.out.println("Lexer tokens: ");
-        System.out.println(lexer.tokens);
-
-        assertEquals(37,lexer.tokens.size());
-
-        parser.setTokens(lexer.tokens);
-        parser.run();
-
-        assertTrue(parser.errors == 0);
-
-        System.out.println("Built AST tree: ");
-        System.out.println(parser.root.toString());
-
-        System.out.println("Interpreter output: ");
-        interpreter.traverseTree(parser.root, startingFunction);
+        interpreter.traverseTree(parser.root);
     }
 
     @Test
     public void twoFunctionsWithSameName() throws IOException {
 
-        final String startingFunction = "main";
         final String text = """
                 function main () : void is
                     identical()
@@ -344,8 +313,48 @@ public class CompilerTest {
         System.out.println(parser.root.toString());
 
         System.out.println("Interpreter output: ");
-        interpreter.traverseTree(parser.root, startingFunction);
+        interpreter.traverseTree(parser.root);
     }
+
+
+    @Test
+    public void twoFunctionsWithFullAuto() throws IOException {
+
+        final String text = """
+                function main () : auto is
+                    var a : auto is 8 + 5.1
+                    print sum(a, 5)
+                end
+                
+                function sum (a : auto, b : auto) : auto is
+                    print a + b
+                end""";
+
+        initLexer(text);
+        initParser();
+        initInterpreter();
+
+        int result = lexer.yylex();
+
+        assertEquals(0, result);
+
+        System.out.println("Lexer tokens: ");
+        System.out.println(lexer.tokens);
+
+        assertEquals(43,lexer.tokens.size());
+
+        parser.setTokens(lexer.tokens);
+        parser.run();
+
+        assertTrue(parser.errors == 0);
+
+        System.out.println("Built AST tree: ");
+        System.out.println(parser.root.toString());
+
+        System.out.println("Interpreter output: ");
+        interpreter.traverseTree(parser.root);
+    }
+<<<<<<< Updated upstream
 
     @Test
     public void string() throws IOException {
@@ -413,4 +422,6 @@ public class CompilerTest {
         interpreter.traverseTree(parser.root, startingFunction);
     }
 
+=======
+>>>>>>> Stashed changes
 }
