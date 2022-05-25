@@ -1,0 +1,3 @@
+function multiplication (a : int, b : int) : auto is
+    return a * b
+end

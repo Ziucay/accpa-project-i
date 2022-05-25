@@ -6,6 +6,7 @@ import parser.Parser;
 
 import static org.junit.jupiter.api.Assertions.*;
 import java.io.*;
+import java.util.List;
 
 public class CompilerTest {
 
@@ -359,12 +360,12 @@ public class CompilerTest {
     public void imports() throws IOException {
 
         final String text = """
-                import "asdad"
-                import "dsdsd"
+                import "math"
                 
                 function main () : auto is
                     var a : auto is 8 + 5.1
                     print sum(a, 5)
+                    print multiplication(a,5)
                 end
                 
                 function sum (a : auto, b : auto) : auto is
@@ -379,15 +380,27 @@ public class CompilerTest {
 
         assertEquals(0, result);
 
+        Importer importer = new Importer();
+        List<String> additionalSources = importer.getSourcesFromTokens(lexer.tokens);
+
+        String newText = text + "\n";
+        for (String s: additionalSources) {
+            newText = newText + s;
+        }
+
+        initLexer(newText);
+
+        System.out.println(newText);
+
+        int newResult = lexer.yylex();
+
+        assertEquals(0, newResult);
+
         System.out.println("Lexer tokens: ");
         System.out.println(lexer.tokens);
 
         parser.setTokens(lexer.tokens);
         parser.run();
-
-        Importer importer = new Importer();
-        importer.tokens = lexer.tokens;
-        importer.extractSourcesFromTokens();
 
         assertTrue(parser.errors == 0);
 

@@ -69,6 +69,7 @@ import java.util.*;
 %token FUNC
 %token AUTO
 %token VOID
+%token IMPORT
 
 %left PLUS
 %left MINUS
@@ -90,14 +91,24 @@ Lines   : Line Lines
 
 Line    : VariableDeclaration {root.descendants.add($1.obj);}
 	| FunctionDeclaration {root.descendants.add($1.obj);}
+	| UserType {root.descendants.add($1.obj);}
+	| Import
 	;
 
+Import
+	: IMPORT STRING
+	;
+
+UserType
+	: TYPE ModifiablePrimary IS Type {$$ = new ParserVal(new Node("type-declaration", null, Arrays.asList($2.obj, $4.obj)));}
+	; 
+
 ArrayDeclaration
-	: TYPE_ARRAY Identifier COLON Type EQUAL LEFT_SQUARE_BRACE Expression RIGHT_SQUARE_BRACE { $$ = new ParserVal(new Node("array-declaration", null, Arrays.asList($2.obj, $4.obj, $7.obj)));}
+	: TYPE_ARRAY ModifiablePrimary COLON Type EQUAL LEFT_SQUARE_BRACE Expression RIGHT_SQUARE_BRACE { $$ = new ParserVal(new Node("array-declaration", null, Arrays.asList($2.obj, $4.obj, $7.obj)));}
 	;
 
 ArrayAccess
-	: Identifier LEFT_SQUARE_BRACE Expression RIGHT_SQUARE_BRACE {$$ = new ParserVal(new Node("array-access", null, Arrays.asList($1.obj, $3.obj)));}
+	: ModifiablePrimary LEFT_SQUARE_BRACE Expression RIGHT_SQUARE_BRACE {$$ = new ParserVal(new Node("array-access", null, Arrays.asList($1.obj, $3.obj)));}
 	;
 
 VariableDeclaration
@@ -109,9 +120,9 @@ VariableDeclaration
 	;
 
 FunctionDeclaration
-	: FunctionKeyword Identifier LEFT_PAREN RIGHT_PAREN COLON Type IS Body END {$$ = new ParserVal(new Node("function-declaration", null, Arrays.asList($2.obj,new Node("parameters", null, Arrays.asList($1.obj)), $6.obj,$8.obj)));}
-	| FunctionKeyword Identifier LEFT_PAREN ParameterDeclaration RIGHT_PAREN COLON Type IS Body END {$$ = new ParserVal(new Node("function-declaration", null, Arrays.asList($2.obj, new Node("parameters", null, Arrays.asList($4.obj)),$7.obj,$9.obj)));}
-	| FunctionKeyword Identifier LEFT_PAREN Parameters RIGHT_PAREN COLON Type IS Body END {$$ = new ParserVal(new Node("function-declaration", null, Arrays.asList($2.obj, $4.obj,$7.obj,$9.obj)));}
+	: FunctionKeyword ModifiablePrimary LEFT_PAREN RIGHT_PAREN COLON Type IS Body END {$$ = new ParserVal(new Node("function-declaration", null, Arrays.asList($2.obj,new Node("parameters", null, Arrays.asList($1.obj)), $6.obj,$8.obj)));}
+	| FunctionKeyword ModifiablePrimary LEFT_PAREN ParameterDeclaration RIGHT_PAREN COLON Type IS Body END {$$ = new ParserVal(new Node("function-declaration", null, Arrays.asList($2.obj, new Node("parameters", null, Arrays.asList($4.obj)),$7.obj,$9.obj)));}
+	| FunctionKeyword ModifiablePrimary LEFT_PAREN Parameters RIGHT_PAREN COLON Type IS Body END {Collections.reverse($4.obj.descendants);$$ = new ParserVal(new Node("function-declaration", null, Arrays.asList($2.obj, $4.obj,$7.obj,$9.obj)));}
 	;
 
 Parameters
@@ -127,8 +138,10 @@ Type
 	: TYPE_INT {$$ = new ParserVal(new Node("type-integer", null));}
 	| TYPE_DOUBLE {$$ = new ParserVal(new Node("type-real", null));}
 	| TYPE_BOOLEAN {$$ = new ParserVal(new Node("type-boolean", null));}
-	| VOID {$$ = new ParserVal(new Node("void", null));}
-	| AUTO {$$ = new ParserVal(new Node("auto", null));}
+	| TYPE_STRING {$$ = new ParserVal(new Node("type-string", null));}
+	| VOID {$$ = new ParserVal(new Node("type-void", null));}
+	| AUTO {$$ = new ParserVal(new Node("type-auto", null));}
+	| IDENTIFIER {$$ = new ParserVal(new Node("user-type", null));}
 	;
 
 Body
@@ -148,8 +161,7 @@ Statement
 	| VariableDeclaration {$$ = $1; blockStack.peek().add($1.obj);}
 	| Return {$$ = $1; blockStack.peek().add($1.obj);}
 	| Print {$$ = $1; blockStack.peek().add($1.obj);}
-	| ArrayDeclaration {$$ = $1; blockStack.peek().add($1.obj);}
-	| ArrayAccess {$$ = $1; blockStack.peek().add($1.obj);} 	
+	| ArrayDeclaration {$$ = $1; blockStack.peek().add($1.obj);}	
 	;
 
 Print
@@ -165,11 +177,8 @@ Assignment
 FunctionCall
 	: ModifiablePrimary LEFT_PAREN RIGHT_PAREN {$$ = new ParserVal(new Node("function-call", null, Arrays.asList($1.obj, new Node("arguments", null))));}
 	| ModifiablePrimary LEFT_PAREN ArgumentDeclaration RIGHT_PAREN {$$ = new ParserVal(new Node("function-call", null, Arrays.asList($1.obj,new Node("arguments", null, Arrays.asList($3.obj)))));}
-	| ModifiablePrimary LEFT_PAREN Arguments RIGHT_PAREN {$$ = new ParserVal(new Node("function-call", null, Arrays.asList($1.obj, $3.obj)));}
+	| ModifiablePrimary LEFT_PAREN Arguments RIGHT_PAREN {Collections.reverse($3.obj.descendants); $$ = new ParserVal(new Node("function-call", null, Arrays.asList($1.obj, $3.obj)));}
 	;
-
-Identifier
-	: IDENTIFIER {$$ = new ParserVal(new Node(new String(yylval.sval), null));}
 
 Arguments
 	: ArgumentDeclaration {$$ = new ParserVal(new Node("arguments", null, Arrays.asList($1.obj)));}
@@ -215,6 +224,7 @@ Expression
 	| Relation OR Expression {$$ = new ParserVal(new Node("or", null, Arrays.asList($1.obj, $3.obj)));}
 	| Relation XOR Expression {$$ = new ParserVal(new Node("xor", null, Arrays.asList($1.obj, $3.obj)));}
 	| Relation {$$ = $1;}
+	| FunctionCall {$$ = $1;}
 	; 
 
 Relation
@@ -249,10 +259,12 @@ Primary
 	| INTEGER {$$ = new ParserVal(new Node(yylval.ival.toString(), Integer.valueOf($1.ival)));}
 	| TRUE {$$ = new ParserVal(new Node("true", Boolean.valueOf(true)));}
 	| FALSE {$$ = new ParserVal(new Node("false", Boolean.valueOf(false)));}
+	| STRING {$$ = new ParserVal(new Node(yylval.sval, $1.sval));}
 	| ModifiablePrimary {$$ = new ParserVal(new Node("modifiable", null, Arrays.asList($1.obj)));}
 	;
 
 ModifiablePrimary : IDENTIFIER {$$ = new ParserVal(new Node(yylval.sval, null));}
+		  | ArrayAccess {$$ = $1;}
 		  ;
 
 %%
