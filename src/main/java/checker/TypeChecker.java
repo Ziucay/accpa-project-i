@@ -284,20 +284,7 @@ public class TypeChecker {
                     }
                     throw new Exception("Incompatible types");
                 }
-        }
-    }
-
-    public void addFunctions (Node node, TypeBlock block) {
-        for (Node child : node.descendants) {
-            if (Objects.equals(child.identifier, "function-declaration")
-                    || Objects.equals(child.identifier, "function-expression")) {
-                block.addDescendant(child.descendants.get(0).identifier);
-                FunctionType func = new FunctionType(child, child.descendants.get(2).identifier, child.descendants.get(0).identifier);
-                block.addFunction(child.descendants.get(0).identifier, func);
-                for (Node parameter : child.descendants.get(1).descendants) {
-                    func.addParameter(parameter.descendants.get(0).identifier, parameter.descendants.get(1));
-                }
-            }
+                throw new Exception("Unknown error");
         }
     }
 }
