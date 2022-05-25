@@ -5,8 +5,7 @@ import parser.Node;
 import java.util.Objects;
 
 public class Interpreter {
-    public Interpreter() {
-    }
+    public Interpreter() {}
 
     public void traverseTree(Node root, String startFunction) {
         Block global = new Block();
