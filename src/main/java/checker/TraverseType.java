@@ -7,14 +7,14 @@ import java.util.List;
 
 public class TraverseType {
     String type;
-    FunctionType func;
+    TypeBlock func;
     boolean isReturn = false;
 
     public TraverseType (String type) {
         this.type = type;
     }
 
-    public TraverseType (String type, FunctionType func) {
+    public TraverseType (String type, TypeBlock func) {
         this.type = type;
         this.func = func;
     }
