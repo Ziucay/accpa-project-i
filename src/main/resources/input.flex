@@ -20,6 +20,7 @@ Newline = \r|\n|\r\n
 Integer = -?[0-9]+
 Double = -?[0-9]+.[0-9]+
 Identifier = [a-zA-Z]+[a-zA-Z0-9_]+
+String = \"([^\\\"]|\\.)*\"
 %{
 public List<Token> tokens = new ArrayList();
 %}
@@ -56,9 +57,9 @@ public List<Token> tokens = new ArrayList();
 
 "%" {tokens.add(new Token(TokenType.PERCENT, "%", null, yyline, yycolumn));}
 
-"=" {tokens.add(new Token(TokenType.ASSIGNMENT, "=", null, yyline, yycolumn));}
+"=" {tokens.add(new Token(TokenType.EQUAL, "=", null, yyline, yycolumn));}
 
-"==" {tokens.add(new Token(TokenType.EQUAL, "==", null, yyline, yycolumn));}
+"==" {tokens.add(new Token(TokenType.EQUAl_EQUAL, "==", null, yyline, yycolumn));}
 
 "/=" {tokens.add(new Token(TokenType.NOT_EQUAL, "/=", null, yyline, yycolumn));}
 
@@ -106,17 +107,29 @@ public List<Token> tokens = new ArrayList();
 
 "print" {tokens.add(new Token(TokenType.PRINT, "print", null, yyline, yycolumn));}
 
+"auto" {tokens.add(new Token(TokenType.AUTO, "auto", null, yyline, yycolumn));}
+
+"void" {tokens.add(new Token(TokenType.VOID, "void", null, yyline, yycolumn));}
+
+"array" {tokens.add(new Token(TokenType.TYPE_ARRAY, "array", null, yyline, yycolumn));}
+
+"import" {tokens.add(new Token(TokenType.IMPORT, "import", null, yyline, yycolumn));}
+
 ":" {tokens.add(new Token(TokenType.COLON, "colon", null, yyline, yycolumn));}
 
 "=>" {tokens.add(new Token(TokenType.ARROW, "arrow", null, yyline, yycolumn));}
 
 "func" {tokens.add(new Token(TokenType.FUNC, "func", null, yyline, yycolumn));}
 
+"type" {tokens.add(new Token(TokenType.TYPE, "func", null, yyline, yycolumn));}
+
 {Integer} {tokens.add(new Token(TokenType.INTEGER, yytext(), null, yyline, yycolumn));}
 
 {Double} {tokens.add(new Token(TokenType.DOUBLE, yytext(), null, yyline, yycolumn));}
 
 {Identifier} {tokens.add(new Token(TokenType.IDENTIFIER, yytext(), null, yyline, yycolumn));}
+
+{String} {tokens.add(new Token(TokenType.STRING, yytext(), null, yyline, yycolumn));}
 
 [^] {tokens.add(new Token(TokenType.IDENTIFIER, yytext(), null, yyline, yycolumn));}
 

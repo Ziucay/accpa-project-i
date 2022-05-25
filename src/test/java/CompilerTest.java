@@ -10,7 +10,7 @@ import java.io.*;
 public class CompilerTest {
 
     private static final String LOCALE = "UTF-8";
-    private static final Boolean IS_PARSER_PRINTS_DEBUG = true;
+    private static final Boolean IS_PARSER_PRINTS_DEBUG = false;
 
     StringBufferInputStream stream;
     Reader reader;
@@ -345,6 +345,49 @@ public class CompilerTest {
 
         parser.setTokens(lexer.tokens);
         parser.run();
+
+        assertTrue(parser.errors == 0);
+
+        System.out.println("Built AST tree: ");
+        System.out.println(parser.root.toString());
+
+        System.out.println("Interpreter output: ");
+        interpreter.traverseTree(parser.root);
+    }
+
+    @Test
+    public void imports() throws IOException {
+
+        final String text = """
+                import "asdad"
+                import "dsdsd"
+                
+                function main () : auto is
+                    var a : auto is 8 + 5.1
+                    print sum(a, 5)
+                end
+                
+                function sum (a : auto, b : auto) : auto is
+                    print a + b
+                end""";
+
+        initLexer(text);
+        initParser();
+        initInterpreter();
+
+        int result = lexer.yylex();
+
+        assertEquals(0, result);
+
+        System.out.println("Lexer tokens: ");
+        System.out.println(lexer.tokens);
+
+        parser.setTokens(lexer.tokens);
+        parser.run();
+
+        Importer importer = new Importer();
+        importer.tokens = lexer.tokens;
+        importer.extractSourcesFromTokens();
 
         assertTrue(parser.errors == 0);
 

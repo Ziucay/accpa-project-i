@@ -813,7 +813,7 @@ case 20:
 break;
 case 21:
 //#line 125 "parser.y"
-{yyval = new ParserVal(new Node("function-declaration", null, Arrays.asList(val_peek(8).obj, val_peek(6).obj,val_peek(3).obj,val_peek(1).obj)));}
+{Collections.reverse(val_peek(6).obj.descendants);yyval = new ParserVal(new Node("function-declaration", null, Arrays.asList(val_peek(8).obj, val_peek(6).obj,val_peek(3).obj,val_peek(1).obj)));}
 break;
 case 22:
 //#line 129 "parser.y"
@@ -917,7 +917,7 @@ case 48:
 break;
 case 49:
 //#line 180 "parser.y"
-{yyval = new ParserVal(new Node("function-call", null, Arrays.asList(val_peek(3).obj, val_peek(1).obj)));}
+{Collections.reverse(val_peek(1).obj.descendants); yyval = new ParserVal(new Node("function-call", null, Arrays.asList(val_peek(3).obj, val_peek(1).obj)));}
 break;
 case 50:
 //#line 184 "parser.y"
