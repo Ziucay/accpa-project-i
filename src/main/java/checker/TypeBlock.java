@@ -48,10 +48,11 @@ public class TypeBlock {
         return block;
     }
 
-    public void addFunction(Node body, String identifier) {
+    public TypeBlock addFunction(Node body, String identifier) {
         TypeBlock block = new TypeBlock(this, body);
         this.functions.put(identifier, block);
         block.type = "type-func";
+        return block;
     }
 
     public String returnType() {
@@ -73,6 +74,12 @@ public class TypeBlock {
             return prev.returnType(identifier);
         } else {
             return null;
+        }
+    }
+
+    public void changeReturnType(String type) {
+        if (Objects.equals(this.type, "type-func")) {
+            this.body.descendants.get(2).identifier = type;
         }
     }
 
