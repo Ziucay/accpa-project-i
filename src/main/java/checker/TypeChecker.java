@@ -178,6 +178,10 @@ public class TypeChecker {
                         return lastReturn;
                     }
                     result = traverse(child, block, null, CallReturn, currentFunction);
+                    if (result != null) {
+                        System.out.println(type + " " + result.type);
+                        System.out.println(node);
+                    }
                     if (result != null && result.isReturn) {
                         if (Objects.equals(type, "type-auto")) {
                             lastReturn = result;
@@ -253,6 +257,7 @@ public class TypeChecker {
                     }
                     return null;
                 }
+                result.isReturn = false;
                 if (Objects.equals(funcBlock.body.descendants.get(2).identifier, "type-auto")) {
                     funcBlock.body.descendants.get(2).identifier = result.type;
                     return result;
