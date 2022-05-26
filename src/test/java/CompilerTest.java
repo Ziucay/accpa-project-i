@@ -282,7 +282,7 @@ public class CompilerTest {
         final String text = """
                 function main () : auto is
                     var a : auto is 8 + 5.1
-                    print sum(a, 5)
+                    sum(a, 5)
                 end
                                 
                 function sum (a : auto, b : auto) : auto is
