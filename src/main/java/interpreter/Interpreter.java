@@ -245,7 +245,7 @@ public class Interpreter {
                 return null;
             case "for":
                 Block forBlock = new Block(block);
-                String variable = node.descendants.get(0).descendants.get(0).identifier;
+                String variable = node.descendants.get(0).identifier;
                 int leftRange = (int) traverse(node.descendants.get(1).descendants.get(0), forBlock);
                 int rightRange = (int) traverse(node.descendants.get(1).descendants.get(1), forBlock);
                 block.assignVariable(variable, leftRange);
