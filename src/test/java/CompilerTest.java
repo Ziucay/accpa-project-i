@@ -524,9 +524,9 @@ public class CompilerTest {
                     print sum(a, 5)
                     
                     function quoted(quotable: auto):void is
-                        print <
+                        print "<"
                         print quotable
-                        print >  
+                        print ">" 
                     end
                     
                     print quoted(a)
