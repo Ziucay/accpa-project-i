@@ -176,6 +176,7 @@ public class TypeChecker {
                             && Objects.equals(child.descendants.get(0).descendants.get(0).identifier, CallReturn))) {
                         return lastReturn;
                     }
+
                     result = traverse(child, block, null, CallReturn);
                     if (result != null && result.isReturn) {
                         if (Objects.equals(type, "type-auto")) {
@@ -282,7 +283,11 @@ public class TypeChecker {
             case "modifiable":
             case "argument":
             case "print":
-                return traverse(node.descendants.get(0), block, type, CallReturn);
+                result = traverse(node.descendants.get(0), block, type, CallReturn);
+                if (result != null) {
+                    result.isReturn = false;
+                }
+                return result;
             default:
                 TypeBlock vared = block.getVariable(node.identifier);
                 if (vared != null) {
