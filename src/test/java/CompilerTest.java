@@ -1,6 +1,7 @@
 import checker.TypeChecker;
 import interpreter.Interpreter;
 import lexer.Lexer;
+import lexer.Token;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,6 +10,7 @@ import parser.Parser;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.*;
+import java.util.List;
 
 public class CompilerTest {
 
@@ -37,22 +39,6 @@ public class CompilerTest {
         }
     }
 
-    private void initParser() {
-        parser = new Parser(IS_PARSER_PRINTS_DEBUG);
-    }
-
-    private void initInterpreter() {
-        interpreter = new Interpreter();
-    }
-
-    private void initChecker() {
-        checker = new TypeChecker();
-    }
-
-    private void initImporter() {
-        importer = new Importer();
-    }
-
     private void processLexer(String text) throws IOException {
         initLexer(text);
 
@@ -68,14 +54,31 @@ public class CompilerTest {
 
         assertEquals(0, newResult);
     }
+    private void processParser(List<Token> tokens)
+    {
+        parser.setTokens(tokens);
+        parser.run();
+    }
+
+    private void processFlow(String text) throws Exception {
+        processLexer(text);
+
+        processParser(lexer.tokens);
+
+        assertTrue(parser.errors == 0);
+
+        checker.check(parser.root);
+
+        interpreter.traverseTree(parser.root);
+    }
 
     @BeforeEach
     public void init()
     {
-        initParser();
-        initInterpreter();
-        initChecker();
-        initImporter();
+        parser = new Parser(IS_PARSER_PRINTS_DEBUG);
+        interpreter = new Interpreter();
+        checker = new TypeChecker();
+        importer = new Importer();
     }
 
     @AfterEach
@@ -94,20 +97,7 @@ public class CompilerTest {
                     print 1 + a
                 end""";
 
-        processLexer(text);
-
-        parser.setTokens(lexer.tokens);
-        parser.run();
-
-        checker.check(parser.root);
-
-        assertTrue(parser.errors == 0);
-
-        System.out.println("Built AST tree: ");
-        System.out.println(parser.root.toString());
-
-        System.out.println("Interpreter output: ");
-        interpreter.traverseTree(parser.root);
+        processFlow(text);
     }
 
     @Test
@@ -118,17 +108,7 @@ public class CompilerTest {
                     print 1 +
                 end""";
 
-        processLexer(text);
-
-        parser.setTokens(lexer.tokens);
-        parser.run();
-
-        assertFalse(parser.errors == 0);
-
-        checker.check(parser.root);
-        
-
-        interpreter.traverseTree(parser.root);
+        processFlow(text);
     }
 
     @Test
@@ -146,16 +126,7 @@ public class CompilerTest {
                     print a
                 end""";
 
-        processLexer(text);
-
-        parser.setTokens(lexer.tokens);
-        parser.run();
-
-        checker.check(parser.root);
-
-        assertTrue(parser.errors == 0);
-
-        interpreter.traverseTree(parser.root);
+        processFlow(text);
     }
 
     @Test
@@ -170,16 +141,7 @@ public class CompilerTest {
                     sum(10, 27)
                 end""";
 
-        processLexer(text);
-
-        parser.setTokens(lexer.tokens);
-        parser.run();
-
-        checker.check(parser.root);
-
-        assertTrue(parser.errors == 0);
-
-        interpreter.traverseTree(parser.root);
+        processFlow(text);
     }
 
     @Test
@@ -192,16 +154,7 @@ public class CompilerTest {
                     print b
                 end""";
 
-        processLexer(text);
-
-        parser.setTokens(lexer.tokens);
-        parser.run();
-
-        checker.check(parser.root);
-
-        assertTrue(parser.errors == 0);
-
-        interpreter.traverseTree(parser.root);
+        processFlow(text);
     }
 
     @Test
@@ -215,16 +168,7 @@ public class CompilerTest {
                     print b
                 end""";
 
-        processLexer(text);
-
-        parser.setTokens(lexer.tokens);
-        parser.run();
-
-        checker.check(parser.root);
-
-        assertTrue(parser.errors == 0);
-
-        interpreter.traverseTree(parser.root);
+        processFlow(text);
     }
 
     @Test
@@ -242,16 +186,7 @@ public class CompilerTest {
                     end
                 end""";
 
-        processLexer(text);
-
-        parser.setTokens(lexer.tokens);
-        parser.run();
-
-        checker.check(parser.root);
-
-        assertTrue(parser.errors == 0);
-
-        interpreter.traverseTree(parser.root);
+        processFlow(text);
     }
 
     @Test
@@ -267,16 +202,7 @@ public class CompilerTest {
                     print a + b
                 end""";
 
-        processLexer(text);
-
-        parser.setTokens(lexer.tokens);
-        parser.run();
-
-        checker.check(parser.root);
-
-        assertTrue(parser.errors == 0);
-
-        interpreter.traverseTree(parser.root);
+        processFlow(text);
     }
 
     @Test
@@ -290,16 +216,7 @@ public class CompilerTest {
                     print a(4)
                 end""";
 
-        processLexer(text);
-
-        parser.setTokens(lexer.tokens);
-        parser.run();
-
-        checker.check(parser.root);
-
-        assertTrue(parser.errors == 0);
-
-        interpreter.traverseTree(parser.root);
+        processFlow(text);
     }
 
     @Test
@@ -313,16 +230,7 @@ public class CompilerTest {
                     end
                 end""";
 
-        processLexer(text);
-
-        parser.setTokens(lexer.tokens);
-        parser.run();
-
-        checker.check(parser.root);
-
-        assertTrue(parser.errors == 0);
-
-        interpreter.traverseTree(parser.root);
+        processFlow(text);
     }
 
     @Test
@@ -341,16 +249,7 @@ public class CompilerTest {
                     return a + b
                 end""";
 
-        processLexer(text);
-
-        parser.setTokens(lexer.tokens);
-        parser.run();
-
-        checker.check(parser.root);
-
-        assertTrue(parser.errors == 0);
-
-        interpreter.traverseTree(parser.root);
+        processFlow(text);
     }
 
     @Test
@@ -367,16 +266,7 @@ public class CompilerTest {
                     print sumed(1, 2)
                 end""";
 
-        processLexer(text);
-
-        parser.setTokens(lexer.tokens);
-        parser.run();
-
-        checker.check(parser.root);
-
-        assertTrue(parser.errors == 0);
-
-        interpreter.traverseTree(parser.root);
+        processFlow(text);
     }
 
     @Test
@@ -390,16 +280,7 @@ public class CompilerTest {
                     sum(1, 2)
                 end""";
 
-        processLexer(text);
-
-        parser.setTokens(lexer.tokens);
-        parser.run();
-
-        checker.check(parser.root);
-
-        assertTrue(parser.errors == 0);
-
-        interpreter.traverseTree(parser.root);
+        processFlow(text);
     }
 
     @Test
@@ -426,15 +307,6 @@ public class CompilerTest {
                     return a + b
                 end""";
 
-        processLexer(text);
-
-        parser.setTokens(lexer.tokens);
-        parser.run();
-
-        checker.check(parser.root);
-
-        assertTrue(parser.errors == 0);
-
-        interpreter.traverseTree(parser.root);
+        processFlow(text);
     }
 }
