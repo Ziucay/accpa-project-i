@@ -295,7 +295,6 @@ public class Interpreter {
                 result = traverse(node.descendants.get(0), block);
                 return new ReturnObject(result);
             case "function-call":
-                System.out.println("hello");
                 FunctionValue func = new FunctionValue(block.getFunctionValue(node.descendants.get(0).identifier));
                 Block funcBlock = new Block();
                 funcBlock.cloneBlock(func.block);

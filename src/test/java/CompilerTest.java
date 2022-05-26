@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import parser.Parser;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.*;
 import java.util.List;
 
@@ -24,24 +25,20 @@ public class CompilerTest {
             stream = new StringBufferInputStream(text);
             reader = new InputStreamReader(stream, LOCALE);
             lexer = new Lexer(reader);
-        }
-        catch (java.io.IOException e) {
+        } catch (java.io.IOException e) {
             System.out.println("IO error scanning file.");
             System.out.println(e);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("Unexpected exception:");
             e.printStackTrace();
         }
     }
 
-    private void initParser()
-    {
+    private void initParser() {
         parser = new Parser(IS_PARSER_PRINTS_DEBUG);
     }
 
-    private void initInterpreter()
-    {
+    private void initInterpreter() {
         interpreter = new Interpreter();
     }
 
@@ -65,7 +62,7 @@ public class CompilerTest {
         System.out.println("Lexer tokens: ");
         System.out.println(lexer.tokens);
 
-        assertEquals(19,lexer.tokens.size());
+        assertEquals(19, lexer.tokens.size());
 
         parser.setTokens(lexer.tokens);
         parser.run();
@@ -101,7 +98,7 @@ public class CompilerTest {
         System.out.println("Lexer tokens: ");
         System.out.println(lexer.tokens);
 
-        assertEquals(12,lexer.tokens.size());
+        assertEquals(12, lexer.tokens.size());
 
         parser.setTokens(lexer.tokens);
         parser.run();
@@ -141,7 +138,7 @@ public class CompilerTest {
         System.out.println("Lexer tokens: ");
         System.out.println(lexer.tokens);
 
-        assertEquals(40,lexer.tokens.size());
+        assertEquals(40, lexer.tokens.size());
 
         parser.setTokens(lexer.tokens);
         parser.run();
@@ -181,7 +178,7 @@ public class CompilerTest {
         System.out.println("Lexer tokens: ");
         System.out.println(lexer.tokens);
 
-        assertEquals(34,lexer.tokens.size());
+        assertEquals(34, lexer.tokens.size());
 
         parser.setTokens(lexer.tokens);
         parser.run();
@@ -219,7 +216,7 @@ public class CompilerTest {
         System.out.println("Lexer tokens: ");
         System.out.println(lexer.tokens);
 
-        assertEquals(29,lexer.tokens.size());
+        assertEquals(29, lexer.tokens.size());
 
         parser.setTokens(lexer.tokens);
         parser.run();
@@ -243,7 +240,7 @@ public class CompilerTest {
                 function main() : void is
                     recursion(10)
                 end
-                
+                                
                 function recursion (a : auto) : auto is
                     print a
                     if a > 0 then
@@ -262,7 +259,7 @@ public class CompilerTest {
         System.out.println("Lexer tokens: ");
         System.out.println(lexer.tokens);
 
-        assertEquals(38,lexer.tokens.size());
+        assertEquals(38, lexer.tokens.size());
 
         parser.setTokens(lexer.tokens);
         parser.run();
@@ -286,11 +283,11 @@ public class CompilerTest {
                 function main () : void is
                     identical()
                 end
-                
+                                
                 function identical () : void is
                     print 1
                 end
-                
+                                
                 function identical () : void is
                     print 2
                 end""";
@@ -306,7 +303,7 @@ public class CompilerTest {
         System.out.println("Lexer tokens: ");
         System.out.println(lexer.tokens);
 
-        assertEquals(32,lexer.tokens.size());
+        assertEquals(32, lexer.tokens.size());
 
         parser.setTokens(lexer.tokens);
         parser.run();
@@ -332,7 +329,7 @@ public class CompilerTest {
                     var a : auto is 8 + 5.1
                     print sum(a, 5)
                 end
-                
+                                
                 function sum (a : auto, b : auto) : auto is
                     print a + b
                 end""";
@@ -348,7 +345,7 @@ public class CompilerTest {
         System.out.println("Lexer tokens: ");
         System.out.println(lexer.tokens);
 
-        assertEquals(43,lexer.tokens.size());
+        assertEquals(43, lexer.tokens.size());
 
         parser.setTokens(lexer.tokens);
         parser.run();
@@ -387,7 +384,7 @@ public class CompilerTest {
         System.out.println("Lexer tokens: ");
         System.out.println(lexer.tokens);
 
-        assertEquals(25,lexer.tokens.size());
+        assertEquals(25, lexer.tokens.size());
 
         parser.setTokens(lexer.tokens);
         parser.run();
@@ -412,7 +409,7 @@ public class CompilerTest {
                     print sum(a, 5)
                     print multiplication(a,5)
                 end
-                
+                                
                 function sum (a : auto, b : auto) : auto is
                     return a + b
                 end""";
@@ -429,13 +426,11 @@ public class CompilerTest {
         List<String> additionalSources = importer.getSourcesFromTokens(lexer.tokens);
 
         String newText = text + "\n";
-        for (String s: additionalSources) {
+        for (String s : additionalSources) {
             newText = newText + s;
         }
 
         initLexer(newText);
-
-        System.out.println(newText);
 
         int newResult = lexer.yylex();
 
@@ -482,13 +477,11 @@ public class CompilerTest {
         List<String> additionalSources = importer.getSourcesFromTokens(lexer.tokens);
 
         String newText = text + "\n";
-        for (String s: additionalSources) {
+        for (String s : additionalSources) {
             newText = newText + s;
         }
 
         initLexer(newText);
-
-        System.out.println(newText);
 
         int newResult = lexer.yylex();
 
@@ -531,7 +524,7 @@ public class CompilerTest {
                     
                     print quoted(a)
                 end
-                
+                                
                 function sum (a : auto, b : auto) : auto is
                     return a + b
                 end""";
@@ -548,13 +541,11 @@ public class CompilerTest {
         List<String> additionalSources = importer.getSourcesFromTokens(lexer.tokens);
 
         String newText = text + "\n";
-        for (String s: additionalSources) {
+        for (String s : additionalSources) {
             newText = newText + s;
         }
 
         initLexer(newText);
-
-        System.out.println(newText);
 
         int newResult = lexer.yylex();
 

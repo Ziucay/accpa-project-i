@@ -62,6 +62,10 @@ public class TypeBlock {
         return null;
     }
 
+    public String variableType() {
+        return this.body.descendants.get(1).identifier;
+    }
+
     public String returnType(String identifier) {
         if (this.functions.containsKey(identifier)) {
             return this.functions.get(identifier).body.descendants.get(2).identifier;

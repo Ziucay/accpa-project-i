@@ -2,7 +2,7 @@ function multiplication (a : int, b : int) : auto is
     return a * b
 end
 
-function factorial (a : int) : auto is
+function factorial (a : int) : int is
     if a < 1 then
         return 1
     end
