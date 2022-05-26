@@ -67,6 +67,8 @@ public class CompilerTest {
 
         assertTrue(parser.errors == 0);
 
+        System.out.println(parser.root);
+
         checker.check(parser.root);
 
         interpreter.traverseTree(parser.root);
