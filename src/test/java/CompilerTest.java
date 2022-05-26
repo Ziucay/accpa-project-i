@@ -322,15 +322,10 @@ public class CompilerTest {
 
         final String text = """
                 function main () : auto is
-                    var a : func is sumed()
-                    a(1, 5)
-                end
-                                
-                function sumed (a : auto, b : auto) : auto is
-                    function sum (a : int, b : int) : int is
-                        print a + b
-                    end
-                    return sum
+                    func a : auto is () => {
+                        return 5
+                    }
+                    print a()
                 end""";
 
         initLexer(text);
@@ -344,7 +339,7 @@ public class CompilerTest {
         System.out.println("Lexer tokens: ");
         System.out.println(lexer.tokens);
 
-        assertEquals(59, lexer.tokens.size());
+        assertEquals(25, lexer.tokens.size());
 
         parser.setTokens(lexer.tokens);
         parser.run();
