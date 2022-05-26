@@ -84,6 +84,7 @@ public class TypeChecker {
         TraverseType left, right;
         TraverseType result = null;
         TraverseType returned;
+
         for (Node child : node.descendants) {
             if (Objects.equals(child.identifier, "function-declaration")) {
                 TypeBlock fun = block.addFunction(child, child.descendants.get(0).identifier);
@@ -106,6 +107,9 @@ public class TypeChecker {
                     throw new Exception("Incompatible types");
                 }
                 if (Objects.equals(left.type, right.type)) {
+                    if (Objects.equals(left.type, "type-auto")) {
+                        return new TraverseType("type-numeric");
+                    }
                     return new TraverseType(left.type);
                 }
                 return new TraverseType("type-numeric");
@@ -120,6 +124,9 @@ public class TypeChecker {
                     throw new Exception("Incompatible types");
                 }
                 if (Objects.equals(left.type, right.type)) {
+                    if (Objects.equals(left.type, "type-auto")) {
+                        return new TraverseType("type-numeric");
+                    }
                     return new TraverseType(left.type);
                 }
                 return new TraverseType("type-numeric");
@@ -162,9 +169,6 @@ public class TypeChecker {
                 return new TraverseType("type-boolean");
             case "body":
                 TraverseType lastReturn = null;
-                if (type == null) {
-                    type = block.returnType();
-                }
                 for (Node child :
                         node.descendants) {
                     if (Objects.equals(child.identifier, "function-call")
@@ -175,6 +179,8 @@ public class TypeChecker {
                     }
                     result = traverse(child, block, null, CallReturn);
                     if (result != null && result.isReturn) {
+                        System.out.println(type);
+                        System.out.println(child);
                         if (Objects.equals(type, "type-auto")) {
                             lastReturn = result;
                         } else if (Objects.equals(type, "type-numeric")) {
@@ -201,7 +207,6 @@ public class TypeChecker {
                 if (result != null && result.isReturn) {
                     return result;
                 }
-
                 return null;
             case "return":
                 result = traverse(node.descendants.get(0), block, block.returnType(), CallReturn);
@@ -255,8 +260,6 @@ public class TypeChecker {
                     throw new Exception("Incompatible types");
                 }
                 return result;
-
-
             case "variable-declaration":
                 TypeBlock varBlock = block.addVariable(node, node.descendants.get(0).identifier,
                         node.descendants.get(1).identifier);
