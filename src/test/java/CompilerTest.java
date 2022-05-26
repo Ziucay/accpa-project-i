@@ -111,7 +111,7 @@ public class CompilerTest {
     }
 
     @Test
-    public void oneFunctionParseError() throws IOException {
+    public void oneFunctionParseError() throws Exception {
 
         final String text = """
                 function Aaa () : int is
@@ -124,6 +124,9 @@ public class CompilerTest {
         parser.run();
 
         assertFalse(parser.errors == 0);
+
+        checker.check(parser.root);
+        
 
         interpreter.traverseTree(parser.root);
     }
@@ -217,6 +220,8 @@ public class CompilerTest {
         parser.setTokens(lexer.tokens);
         parser.run();
 
+        checker.check(parser.root);
+
         assertTrue(parser.errors == 0);
 
         interpreter.traverseTree(parser.root);
@@ -298,7 +303,7 @@ public class CompilerTest {
     }
 
     @Test
-    public void loop() throws IOException {
+    public void loop() throws Exception {
 
         final String text = """
                 function main () : void is
@@ -312,6 +317,8 @@ public class CompilerTest {
 
         parser.setTokens(lexer.tokens);
         parser.run();
+
+        checker.check(parser.root);
 
         assertTrue(parser.errors == 0);
 
