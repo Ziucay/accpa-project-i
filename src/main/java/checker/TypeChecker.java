@@ -11,6 +11,7 @@ public class TypeChecker {
     HashMap<String, String> customTypes;
     ArrayList<String> types = new ArrayList<>();
     ArrayList<String> numericTypes = new ArrayList<>();
+    String currentFunction;
 
 
     public TypeChecker() {
@@ -77,10 +78,10 @@ public class TypeChecker {
         if (Objects.equals(global.functions.get("main").returnType(), "type-auto")) {
             global.functions.get("main").changeReturnType("type-void");
         }
-        traverse(global.functions.get("main").body.descendants.get(3), global.functions.get("main"), null, null);
+        traverse(global.functions.get("main").body.descendants.get(3), global.functions.get("main"), null, null, "main");
     }
 
-    public TraverseType traverse(Node node, TypeBlock block, String type, String CallReturn) throws Exception {
+    public TraverseType traverse(Node node, TypeBlock block, String type, String CallReturn, String currentFunction) throws Exception {
         TraverseType left, right;
         TraverseType result = null;
         TraverseType returned;
@@ -100,8 +101,8 @@ public class TypeChecker {
             case "minus":
             case "multiply":
             case "divide":
-                left = traverse(node.descendants.get(0), block, "type-numeric", CallReturn);
-                right = traverse(node.descendants.get(1), block, "type-numeric", CallReturn);
+                left = traverse(node.descendants.get(0), block, "type-numeric", CallReturn, currentFunction);
+                right = traverse(node.descendants.get(1), block, "type-numeric", CallReturn, currentFunction);
                 if (!numericTypes.contains(type) && type != null) {
                     throw new Exception("Incompatible types");
                 }
@@ -113,9 +114,8 @@ public class TypeChecker {
                 }
                 return new TraverseType("type-numeric");
             case "plus":
-                left = traverse(node.descendants.get(0), block, "type-numeric", CallReturn);
-                right = traverse(node.descendants.get(1), block, "type-numeric", CallReturn);
-                System.out.println(left.type + " " + right.type);
+                left = traverse(node.descendants.get(0), block, "type-numeric", CallReturn, currentFunction);
+                right = traverse(node.descendants.get(1), block, "type-numeric", CallReturn, currentFunction);
                 if (Objects.equals(left.type, right.type)
                         && (Objects.equals(type, right.type) || Objects.equals(type, "type-auto")) && Objects.equals(left.type, "type-string")) {
                     return new TraverseType("type-string");
@@ -134,8 +134,8 @@ public class TypeChecker {
             case "more or equal":
             case "less":
             case "less or equal":
-                left = traverse(node.descendants.get(0), block, "type-numeric", CallReturn);
-                right = traverse(node.descendants.get(1), block, "type-numeric", CallReturn);
+                left = traverse(node.descendants.get(0), block, "type-numeric", CallReturn, currentFunction);
+                right = traverse(node.descendants.get(1), block, "type-numeric", CallReturn, currentFunction);
                 if (!Objects.equals(type, "type-boolean") && !Objects.equals(type, "type-auto") && type != null) {
                     throw new Exception("Incompatible types");
                 }
@@ -145,8 +145,8 @@ public class TypeChecker {
                 return new TraverseType("type-boolean");
             case "not equal":
             case "equal":
-                left = traverse(node.descendants.get(0), block, "type-numeric", CallReturn);
-                right = traverse(node.descendants.get(1), block, "type-numeric", CallReturn);
+                left = traverse(node.descendants.get(0), block, "type-numeric", CallReturn, currentFunction);
+                right = traverse(node.descendants.get(1), block, "type-numeric", CallReturn, currentFunction);
                 if (Objects.equals(left.type, right.type)
                         && (Objects.equals(type, "type-boolean") || Objects.equals(type, "type-auto")) && Objects.equals(left.type, "type-string")) {
                     return new TraverseType("type-boolean");
@@ -161,8 +161,8 @@ public class TypeChecker {
             case "or":
             case "and":
             case "xor":
-                left = traverse(node.descendants.get(0), block, "type-boolean", CallReturn);
-                right = traverse(node.descendants.get(1), block, "type-boolean", CallReturn);
+                left = traverse(node.descendants.get(0), block, "type-boolean", CallReturn, currentFunction);
+                right = traverse(node.descendants.get(1), block, "type-boolean", CallReturn, currentFunction);
                 if (!(Objects.equals(left.type, "type-boolean") && Objects.equals(right.type, "type-boolean"))) {
                     throw new Exception("Incompatible types");
                 }
@@ -177,7 +177,7 @@ public class TypeChecker {
                             && Objects.equals(child.descendants.get(0).descendants.get(0).identifier, CallReturn))) {
                         return lastReturn;
                     }
-                    result = traverse(child, block, null, CallReturn);
+                    result = traverse(child, block, null, CallReturn, currentFunction);
                     if (result != null && result.isReturn) {
                         if (Objects.equals(type, "type-auto")) {
                             lastReturn = result;
@@ -201,13 +201,13 @@ public class TypeChecker {
             case "for":
             case "if":
                 TypeBlock bodyBlock = block.addDescendant(node);
-                result = traverse(node.descendants.get(node.descendants.size() - 1), bodyBlock, null, CallReturn);
+                result = traverse(node.descendants.get(node.descendants.size() - 1), bodyBlock, block.returnType(currentFunction), CallReturn, currentFunction);
                 if (result != null && result.isReturn) {
                     return result;
                 }
                 return null;
             case "return":
-                result = traverse(node.descendants.get(0), block, null, CallReturn);
+                result = traverse(node.descendants.get(0), block, null, CallReturn, currentFunction);
                 if (Objects.equals(result.type, "type-func")) {
                     returned = new TraverseType(result.type, result.func);
                 } else {
@@ -224,11 +224,10 @@ public class TypeChecker {
                 int k = 0;
                 for (Node child : funcBlock.body.descendants.get(1).descendants) {
                     if (child != null) {
-                        arguments.add(traverse(node.descendants.get(1).descendants.get(k), block, child.descendants.get(1).identifier, CallReturn).type);
+                        arguments.add(traverse(node.descendants.get(1).descendants.get(k), block, child.descendants.get(1).identifier, CallReturn, currentFunction).type);
                         k++;
                     }
                 }
-                System.out.println(arguments);
                 for (int i = 0; i < arguments.size(); i++) {
                     if (Objects.equals(funcBlock.body.descendants.get(1).descendants.get(i).descendants.get(1).identifier,
                             "type-auto")) {
@@ -244,14 +243,16 @@ public class TypeChecker {
                         throw new Exception("Incompatible types");
                     }
                 }
-                result = traverse(funcBlock.body.descendants.get(3), funcBlock, funcBlock.returnType(), funcBlock.body.descendants.get(0).identifier);
+                if (Objects.equals(currentFunction, funcBlock.body.descendants.get(0).identifier)) {
+                    return new TraverseType(funcBlock.body.descendants.get(2).identifier);
+                }
+                result = traverse(funcBlock.body.descendants.get(3), funcBlock, funcBlock.returnType(), funcBlock.body.descendants.get(0).identifier, funcBlock.body.descendants.get(0).identifier);
                 if (result == null) {
                     if (Objects.equals(funcBlock.returnType(), "type-auto")) {
                         funcBlock.changeReturnType("type-void");
                     }
                     return null;
                 }
-
                 if (Objects.equals(funcBlock.body.descendants.get(2).identifier, "type-auto")) {
                     funcBlock.body.descendants.get(2).identifier = result.type;
                     return result;
@@ -264,7 +265,7 @@ public class TypeChecker {
                 TypeBlock varBlock = block.addVariable(node, node.descendants.get(0).identifier,
                         node.descendants.get(1).identifier);
                 if (node.descendants.size() == 3) {
-                    result = traverse(node.descendants.get(2), block, varBlock.variableType(), CallReturn);
+                    result = traverse(node.descendants.get(2), block, varBlock.variableType(), CallReturn, currentFunction);
                 }
                 if (Objects.equals(varBlock.variableType(), "type-auto")) {
                     if (result != null && Objects.equals(result.type, "type-func")) {
@@ -281,12 +282,12 @@ public class TypeChecker {
                 return null;
             case "assignment":
                 TypeBlock var = block.getVariable(node.descendants.get(0).identifier);
-                traverse(node.descendants.get(1), block, var.variableType(), CallReturn);
+                traverse(node.descendants.get(1), block, var.variableType(), CallReturn, currentFunction);
                 return null;
             case "modifiable":
             case "argument":
             case "print":
-                result = traverse(node.descendants.get(0), block, type, CallReturn);
+                result = traverse(node.descendants.get(0), block, type, CallReturn, currentFunction);
                 if (result != null) {
                     result.isReturn = false;
                 }
