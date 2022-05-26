@@ -1,6 +1,7 @@
 import checker.TypeChecker;
 import interpreter.Interpreter;
 import lexer.Lexer;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import parser.Parser;
@@ -77,6 +78,12 @@ public class CompilerTest {
         initImporter();
     }
 
+    @AfterEach
+    public void end()
+    {
+        System.out.println(parser.root.toString());
+    }
+
 
     @Test
     public void simpleFunction() throws Exception {
@@ -96,6 +103,10 @@ public class CompilerTest {
 
         assertTrue(parser.errors == 0);
 
+        System.out.println("Built AST tree: ");
+        System.out.println(parser.root.toString());
+
+        System.out.println("Interpreter output: ");
         interpreter.traverseTree(parser.root);
     }
 
