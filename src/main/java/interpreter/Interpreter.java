@@ -67,6 +67,7 @@ public class Interpreter {
                         blocked.createVariable(parameter.descendants.get(0).identifier, parameter.descendants.get(1).identifier);
                         funced.addParameterIdentifier(parameter.descendants.get(0).identifier);
                     }
+                return null;
             case "plus":
                 left = traverse(node.descendants.get(0), block);
                 right = traverse(node.descendants.get(1), block);
@@ -228,6 +229,7 @@ public class Interpreter {
             case "body":
                 for (Node child :
                         node.descendants) {
+                    System.out.println(child);
                     result = traverse(child, block);
                     if (result instanceof ReturnObject) {
                         return result;
