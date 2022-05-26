@@ -859,7 +859,7 @@ case 30:
 break;
 case 31:
 //#line 144 "parser.y"
-{yyval = new ParserVal(new Node("user-type", null));}
+{yyval = new ParserVal(new Node(yylval.sval, null));}
 break;
 case 32:
 //#line 148 "parser.y"

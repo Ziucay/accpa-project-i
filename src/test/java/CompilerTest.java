@@ -23,7 +23,7 @@ public class CompilerTest {
     TypeChecker checker;
     Importer importer;
 
-    private void initLexer(String text) throws UnsupportedEncodingException {
+    private void initLexer(String text) {
         try {
             stream = new StringBufferInputStream(text);
             reader = new InputStreamReader(stream, LOCALE);
