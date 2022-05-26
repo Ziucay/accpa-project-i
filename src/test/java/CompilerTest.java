@@ -410,11 +410,10 @@ public class CompilerTest {
                 function main () : void is
                     var a : int is 8 + 5
                     print sum(a, 5)
-                    print multiplication(a, 5)
+                    print multiplication(a,5)
                 end
                 
                 function sum (a : auto, b : auto) : auto is
-                    print a + b
                     return a + b
                 end""";
 
@@ -447,8 +446,6 @@ public class CompilerTest {
 
         parser.setTokens(lexer.tokens);
         parser.run();
-
-        System.out.println(parser.root);
 
         TypeChecker checker = new TypeChecker();
         checker.check(parser.root);

@@ -1,4 +1,4 @@
-function multiplication (a : double, b : double) : auto is
+function multiplication (a : int, b : int) : auto is
     return a * b
 end
 
