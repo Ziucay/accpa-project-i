@@ -84,7 +84,8 @@ public class CompilerTest {
     @AfterEach
     public void end()
     {
-        System.out.println(parser.root.toString());
+        if (parser.root != null)
+            System.out.println(parser.root);
     }
 
 
