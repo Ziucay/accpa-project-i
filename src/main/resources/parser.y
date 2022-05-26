@@ -114,9 +114,9 @@ ArrayAccess
 VariableDeclaration
 	: VAR ModifiablePrimary COLON Type {$$ = new ParserVal(new Node("variable-declaration", null, Arrays.asList($2.obj, $4.obj)));}
 	| VAR ModifiablePrimary COLON Type IS Expression {$$ = new ParserVal(new Node("variable-declaration", null, Arrays.asList($2.obj, $4.obj, $6.obj)));}
-	| FUNC ModifiablePrimary COLON Type IS LEFT_PAREN RIGHT_PAREN ARROW LEFT_BRACE Body RIGHT_BRACE {$$ = new ParserVal(new Node("function-expression", null, Arrays.asList($2.obj,new Node("parameters", null), $4.obj, $10.obj)));}
-	| FUNC ModifiablePrimary COLON Type IS LEFT_PAREN ParameterDeclaration RIGHT_PAREN ARROW LEFT_BRACE Body RIGHT_BRACE {$$ = new ParserVal(new Node("function-expression", null, Arrays.asList($2.obj,new Node("parameters", null, Arrays.asList($7.obj)),$4.obj, $11.obj)));}
-	| FUNC ModifiablePrimary COLON Type IS LEFT_PAREN Parameters RIGHT_PAREN ARROW LEFT_BRACE Body RIGHT_BRACE {$$ = new ParserVal(new Node("function-expression", null, Arrays.asList($2.obj,$7.obj, $4.obj, $11.obj)));}
+	| FuncKeyword ModifiablePrimary COLON Type IS LEFT_PAREN RIGHT_PAREN ARROW LEFT_BRACE Body RIGHT_BRACE {$$ = new ParserVal(new Node("function-expression", null, Arrays.asList($2.obj,new Node("parameters", null), $4.obj, $10.obj)));}
+	| FuncKeyword ModifiablePrimary COLON Type IS LEFT_PAREN ParameterDeclaration RIGHT_PAREN ARROW LEFT_BRACE Body RIGHT_BRACE {$$ = new ParserVal(new Node("function-expression", null, Arrays.asList($2.obj,new Node("parameters", null, Arrays.asList($7.obj)),$4.obj, $11.obj)));}
+	| FuncKeyword ModifiablePrimary COLON Type IS LEFT_PAREN Parameters RIGHT_PAREN ARROW LEFT_BRACE Body RIGHT_BRACE {$$ = new ParserVal(new Node("function-expression", null, Arrays.asList($2.obj,$7.obj, $4.obj, $11.obj)));}
 	;
 
 FunctionDeclaration
@@ -141,7 +141,7 @@ Type
 	| TYPE_STRING {$$ = new ParserVal(new Node("type-string", null));}
 	| VOID {$$ = new ParserVal(new Node("type-void", null));}
 	| AUTO {$$ = new ParserVal(new Node("type-auto", null));}
-	| IDENTIFIER {$$ = new ParserVal(new Node("user-type", null));}
+	| ModifiablePrimary {$$ = new ParserVal(new Node(yylval.sval, null));}
 	;
 
 Body
@@ -205,6 +205,7 @@ ForKeyword: FOR { blockStack.push(new LinkedList<>());}
 IfKeyword: IF { blockStack.push(new LinkedList<>());}
 ElseKeyword: ELSE { blockStack.push(new LinkedList<>());}
 FunctionKeyword: FUNCTION { blockStack.push(new LinkedList<>());}
+FuncKeyword: FUNC { blockStack.push(new LinkedList<>());}
 
 ForLoop
 	: ForKeyword ModifiablePrimary Range LOOP Body END {$$ = new ParserVal(new Node("for", null, Arrays.asList($2.obj, $3.obj, $5.obj)));}
