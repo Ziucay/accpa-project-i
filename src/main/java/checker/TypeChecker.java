@@ -12,8 +12,6 @@ public class TypeChecker {
     ArrayList<String> types = new ArrayList<>();
     ArrayList<String> numericTypes = new ArrayList<>();
     HashMap<String, String> typesConversion = new HashMap<>();
-    String currentFunction;
-
 
     public TypeChecker() {
         types.add("type-integer");
@@ -42,17 +40,13 @@ public class TypeChecker {
     }
 
     private void processCustomTypes(Node root) {
-        List<Node> descendants = new ArrayList<>();
         customTypes = new HashMap<>();
         for (int i = 0; i < root.descendants.size(); i++) {
             Node current = root.descendants.get(i);
             if (Objects.equals(current.identifier, "type-declaration")) {
                 customTypes.put(current.descendants.get(0).identifier, current.descendants.get(1).identifier);
-            } else if (Objects.equals(current.identifier, "function-declaration")) {
-                descendants.add(current);
             }
         }
-        root.descendants = descendants;
         changeCustomTypes(root);
     }
 
@@ -62,7 +56,7 @@ public class TypeChecker {
                 return;
             }
             if (this.customTypes.containsKey(node.identifier)) {
-                node.identifier = this.typesConversion.get(this.customTypes.get(node.identifier));
+                node.identifier = this.customTypes.get(node.identifier);
             }
             changeCustomTypes(node);
         }
