@@ -363,6 +363,50 @@ public class CompilerTest {
     }
 
     @Test
+    public void firstclass() throws Exception {
+
+        final String text = """
+                function main () : auto is
+                    var a : func is sumed()
+                    a(1, 5)
+                end
+                                
+                function sumed (a : auto, b : auto) : auto is
+                    function sum (a : int, b : int) : int is
+                        print a + b
+                    end
+                    return sum
+                end""";
+
+        initLexer(text);
+        initParser();
+        initInterpreter();
+
+        int result = lexer.yylex();
+
+        assertEquals(0, result);
+
+        System.out.println("Lexer tokens: ");
+        System.out.println(lexer.tokens);
+
+        assertEquals(59, lexer.tokens.size());
+
+        parser.setTokens(lexer.tokens);
+        parser.run();
+
+        TypeChecker checker = new TypeChecker();
+        checker.check(parser.root);
+
+        assertTrue(parser.errors == 0);
+
+        System.out.println("Built AST tree: ");
+        System.out.println(parser.root.toString());
+
+        System.out.println("Interpreter output: ");
+        interpreter.traverseTree(parser.root);
+    }
+
+    @Test
     public void loop() throws IOException {
 
         final String text = """
