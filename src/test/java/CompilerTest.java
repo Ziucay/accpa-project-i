@@ -322,10 +322,10 @@ public class CompilerTest {
 
         final String text = """
                 function main () : auto is
-                    func a : auto is () => {
-                        return 5
+                    func a : auto is (b : auto) => {
+                        return 1 + b
                     }
-                    print a()
+                    print a(4)
                 end""";
 
         initLexer(text);
@@ -339,7 +339,7 @@ public class CompilerTest {
         System.out.println("Lexer tokens: ");
         System.out.println(lexer.tokens);
 
-        assertEquals(25, lexer.tokens.size());
+        assertEquals(31, lexer.tokens.size());
 
         parser.setTokens(lexer.tokens);
         parser.run();

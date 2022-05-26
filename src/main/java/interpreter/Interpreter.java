@@ -359,6 +359,8 @@ public class Interpreter {
             default:
                 if (block.isVariable(node.identifier)) {
                     return block.getVariableValue(node.identifier);
+                } else if (block.getFunctionValue(node.identifier) != null) {
+                    return block.getFunctionValue(node.identifier);
                 } else {
                     return node.value;
                 }

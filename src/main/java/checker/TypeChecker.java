@@ -178,10 +178,6 @@ public class TypeChecker {
                         return lastReturn;
                     }
                     result = traverse(child, block, null, CallReturn, currentFunction);
-                    if (result != null) {
-                        System.out.println(type + " " + result.type);
-                        System.out.println(node);
-                    }
                     if (result != null && result.isReturn) {
                         if (Objects.equals(type, "type-auto")) {
                             lastReturn = result;
@@ -282,8 +278,12 @@ public class TypeChecker {
                 }
                 return null;
             case "function-expression":
-                block.addVariable(node, node.descendants.get(0).identifier,
-                        node.descendants.get(1).identifier);
+                TypeBlock fun = block.addFunction(node, node.descendants.get(0).identifier);
+                fun.type = "type-func";
+                for (Node param : node.descendants.get(1).descendants) {
+                    if (param == null) break;
+                    fun.addVariable(param, param.descendants.get(0).identifier, param.descendants.get(1).identifier);
+                }
                 return null;
             case "assignment":
                 TypeBlock var = block.getVariable(node.descendants.get(0).identifier);
