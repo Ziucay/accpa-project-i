@@ -573,10 +573,10 @@ public class CompilerTest {
                     function quoted(quotable: auto):void is
                         print "<"
                         print quotable
-                        print ">" 
+                        print ">"
                     end
                     
-                    print quoted(a)
+                    quoted(a)
                 end
                                 
                 function sum (a : auto, b : auto) : auto is
