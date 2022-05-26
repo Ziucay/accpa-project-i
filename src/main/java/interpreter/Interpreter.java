@@ -229,7 +229,6 @@ public class Interpreter {
             case "body":
                 for (Node child :
                         node.descendants) {
-                    System.out.println(child);
                     result = traverse(child, block);
                     if (result instanceof ReturnObject) {
                         return result;
