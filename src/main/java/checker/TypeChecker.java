@@ -11,6 +11,7 @@ public class TypeChecker {
     HashMap<String, String> customTypes;
     ArrayList<String> types = new ArrayList<>();
     ArrayList<String> numericTypes = new ArrayList<>();
+    HashMap<String, String> typesConversion = new HashMap<>();
     String currentFunction;
 
 
@@ -26,6 +27,12 @@ public class TypeChecker {
         numericTypes.add("type-double");
         numericTypes.add("type-auto");
         numericTypes.add("type-numeric"); // Type only for checker
+        typesConversion.put("auto", "type-auto");
+        typesConversion.put("void", "type-void");
+        typesConversion.put("integer", "type-integer");
+        typesConversion.put("double", "type-double");
+        typesConversion.put("boolean", "type-boolean");
+        typesConversion.put("func", "type-func");
     }
 
     public void check(Node root) throws Exception {
@@ -55,13 +62,14 @@ public class TypeChecker {
                 return;
             }
             if (this.customTypes.containsKey(node.identifier)) {
-                node.identifier = this.customTypes.get(node.identifier);
+                node.identifier = this.typesConversion.get(this.customTypes.get(node.identifier));
             }
             changeCustomTypes(node);
         }
     }
 
     public void startTraverse(Node root) throws Exception {
+        System.out.println(root);
         TypeBlock global = new TypeBlock(root);
         for (Node node : root.descendants) {
             TypeBlock func = global.addFunction(node, node.descendants.get(0).identifier);

@@ -202,6 +202,27 @@ public class CompilerTest {
     }
 
     @Test
+    public void customTypes() throws Exception {
+
+        final String text = """
+                type Random is auto
+                function main () : auto is
+                    var a : Random is 8 + 5.1
+                    var b : Random is a + a + 5
+                    print b
+                end""";
+
+        processLexer(text);
+
+        parser.setTokens(lexer.tokens);
+        parser.run();
+
+        assertTrue(parser.errors == 0);
+
+        interpreter.traverseTree(parser.root);
+    }
+
+    @Test
     public void recursion() throws Exception {
 
         final String text = """
