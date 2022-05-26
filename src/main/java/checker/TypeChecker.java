@@ -77,7 +77,7 @@ public class TypeChecker {
         if (Objects.equals(global.functions.get("main").returnType(), "type-auto")) {
             global.functions.get("main").changeReturnType("type-void");
         }
-        TraverseType result = traverse(global.functions.get("main").body.descendants.get(3), global.functions.get("main"), null, null);
+        traverse(global.functions.get("main").body.descendants.get(3), global.functions.get("main"), null, null);
     }
 
     public TraverseType traverse(Node node, TypeBlock block, String type, String CallReturn) throws Exception {
@@ -106,6 +106,9 @@ public class TypeChecker {
                     throw new Exception("Incompatible types");
                 }
                 if (Objects.equals(left.type, right.type)) {
+                    if (Objects.equals(left.type, "type-auto")) {
+                        return new TraverseType("type-numeric");
+                    }
                     return new TraverseType(left.type);
                 }
                 return new TraverseType("type-numeric");
@@ -120,6 +123,9 @@ public class TypeChecker {
                     throw new Exception("Incompatible types");
                 }
                 if (Objects.equals(left.type, right.type)) {
+                    if (Objects.equals(left.type, "type-auto")) {
+                        return new TraverseType("type-numeric");
+                    }
                     return new TraverseType(left.type);
                 }
                 return new TraverseType("type-numeric");
@@ -162,9 +168,6 @@ public class TypeChecker {
                 return new TraverseType("type-boolean");
             case "body":
                 TraverseType lastReturn = null;
-                if (type == null) {
-                    type = block.returnType();
-                }
                 for (Node child :
                         node.descendants) {
                     if (Objects.equals(child.identifier, "function-call")
@@ -189,7 +192,7 @@ public class TypeChecker {
                         }
                     }
                 }
-                if (!Objects.equals(type, "type-void") && lastReturn == null && !Objects.equals(type, "type-auto")) {
+                if (type != null && !Objects.equals(type, "type-void") && lastReturn == null && !Objects.equals(type, "type-auto")) {
                     throw new Exception("Incompatible return type");
                 }
                 return lastReturn;
@@ -201,7 +204,6 @@ public class TypeChecker {
                 if (result != null && result.isReturn) {
                     return result;
                 }
-
                 return null;
             case "return":
                 result = traverse(node.descendants.get(0), block, block.returnType(), CallReturn);
@@ -247,6 +249,7 @@ public class TypeChecker {
                     }
                     return null;
                 }
+
                 if (Objects.equals(funcBlock.body.descendants.get(2).identifier, "type-auto")) {
                     funcBlock.body.descendants.get(2).identifier = result.type;
                     return result;
@@ -255,8 +258,6 @@ public class TypeChecker {
                     throw new Exception("Incompatible types");
                 }
                 return result;
-
-
             case "variable-declaration":
                 TypeBlock varBlock = block.addVariable(node, node.descendants.get(0).identifier,
                         node.descendants.get(1).identifier);
