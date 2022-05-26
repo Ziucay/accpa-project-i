@@ -81,13 +81,6 @@ public class CompilerTest {
         importer = new Importer();
     }
 
-    @AfterEach
-    public void end()
-    {
-        if (parser.root != null)
-            System.out.println(parser.root);
-    }
-
 
     @Test
     public void simpleFunction() throws Exception {

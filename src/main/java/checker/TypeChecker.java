@@ -69,6 +69,7 @@ public class TypeChecker {
     }
 
     public void startTraverse(Node root) throws Exception {
+        System.out.println(root);
         TypeBlock global = new TypeBlock(root);
         for (Node node : root.descendants) {
             TypeBlock func = global.addFunction(node, node.descendants.get(0).identifier);
