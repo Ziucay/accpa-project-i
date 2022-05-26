@@ -9,3 +9,19 @@ function factorial (a : int) : int is
     var result : auto is factorial(a - 1)
     return result * a
 end
+
+function pow (a : int, power : int) : int is
+    if power < 2 then
+        return a
+    end
+    var result : auto is pow(a, power - 1)
+    return result * a
+end
+
+function abs(a : auto) : auto is
+    if a < 0 then
+        return a * -1
+    end
+    return a
+end
+
