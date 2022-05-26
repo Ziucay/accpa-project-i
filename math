@@ -6,14 +6,6 @@ function factorial (a : int) : auto is
     if a < 1 then
         return 1
     end
-
-    return factorial(a - 1) * a
-end
-
-function pow (a: auto, power: int) : auto is
-    if power < 2
-        return a
-    end
-
-    return pow(a * a, power - 1)
+    var result : auto is factorial(a - 1)
+    return result * a
 end
