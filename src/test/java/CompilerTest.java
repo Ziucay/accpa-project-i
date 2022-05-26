@@ -1,13 +1,13 @@
 import checker.TypeChecker;
 import interpreter.Interpreter;
 import lexer.Lexer;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import parser.Parser;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.*;
-import java.util.List;
 
 public class CompilerTest {
 
@@ -19,6 +19,8 @@ public class CompilerTest {
     Lexer lexer;
     Parser parser;
     Interpreter interpreter;
+    TypeChecker checker;
+    Importer importer;
 
     private void initLexer(String text) throws UnsupportedEncodingException {
         try {
@@ -42,6 +44,40 @@ public class CompilerTest {
         interpreter = new Interpreter();
     }
 
+    private void initChecker() {
+        checker = new TypeChecker();
+    }
+
+    private void initImporter() {
+        importer = new Importer();
+    }
+
+    private void processLexer(String text) throws IOException {
+        initLexer(text);
+
+        int result = lexer.yylex();
+
+        assertEquals(0, result);
+
+        String newText = importer.addCodeFromImports(lexer.tokens);
+
+        initLexer(text + "\n" + newText);
+
+        int newResult = lexer.yylex();
+
+        assertEquals(0, newResult);
+    }
+
+    @BeforeEach
+    public void init()
+    {
+        initParser();
+        initInterpreter();
+        initChecker();
+        initImporter();
+    }
+
+
     @Test
     public void simpleFunction() throws Exception {
 
@@ -51,31 +87,15 @@ public class CompilerTest {
                     print 1 + a
                 end""";
 
-        initLexer(text);
-        initParser();
-        initInterpreter();
-
-        int result = lexer.yylex();
-
-        assertEquals(0, result);
-
-        System.out.println("Lexer tokens: ");
-        System.out.println(lexer.tokens);
-
-        assertEquals(19, lexer.tokens.size());
+        processLexer(text);
 
         parser.setTokens(lexer.tokens);
         parser.run();
 
-        TypeChecker checker = new TypeChecker();
         checker.check(parser.root);
 
         assertTrue(parser.errors == 0);
 
-        System.out.println("Built AST tree: ");
-        System.out.println(parser.root.toString());
-
-        System.out.println("Interpreter output: ");
         interpreter.traverseTree(parser.root);
     }
 
@@ -87,28 +107,13 @@ public class CompilerTest {
                     print 1 +
                 end""";
 
-        initLexer(text);
-        initParser();
-        initInterpreter();
-
-        int result = lexer.yylex();
-
-        assertEquals(0, result);
-
-        System.out.println("Lexer tokens: ");
-        System.out.println(lexer.tokens);
-
-        assertEquals(12, lexer.tokens.size());
+        processLexer(text);
 
         parser.setTokens(lexer.tokens);
         parser.run();
 
         assertFalse(parser.errors == 0);
 
-        System.out.println("Built AST tree: ");
-        System.out.println(parser.root.toString());
-
-        System.out.println("Interpreter output: ");
         interpreter.traverseTree(parser.root);
     }
 
@@ -127,31 +132,15 @@ public class CompilerTest {
                     print a
                 end""";
 
-        initLexer(text);
-        initParser();
-        initInterpreter();
-
-        int result = lexer.yylex();
-
-        assertEquals(0, result);
-
-        System.out.println("Lexer tokens: ");
-        System.out.println(lexer.tokens);
-
-        assertEquals(40, lexer.tokens.size());
+        processLexer(text);
 
         parser.setTokens(lexer.tokens);
         parser.run();
 
-        TypeChecker checker = new TypeChecker();
         checker.check(parser.root);
 
         assertTrue(parser.errors == 0);
 
-        System.out.println("Built AST tree: ");
-        System.out.println(parser.root.toString());
-
-        System.out.println("Interpreter output: ");
         interpreter.traverseTree(parser.root);
     }
 
@@ -167,31 +156,15 @@ public class CompilerTest {
                     sum(10, 27)
                 end""";
 
-        initLexer(text);
-        initParser();
-        initInterpreter();
-
-        int result = lexer.yylex();
-
-        assertEquals(0, result);
-
-        System.out.println("Lexer tokens: ");
-        System.out.println(lexer.tokens);
-
-        assertEquals(34, lexer.tokens.size());
+        processLexer(text);
 
         parser.setTokens(lexer.tokens);
         parser.run();
 
-        TypeChecker checker = new TypeChecker();
         checker.check(parser.root);
 
         assertTrue(parser.errors == 0);
 
-        System.out.println("Built AST tree: ");
-        System.out.println(parser.root.toString());
-
-        System.out.println("Interpreter output: ");
         interpreter.traverseTree(parser.root);
     }
 
@@ -205,31 +178,15 @@ public class CompilerTest {
                     print b
                 end""";
 
-        initLexer(text);
-        initParser();
-        initInterpreter();
-
-        int result = lexer.yylex();
-
-        assertEquals(0, result);
-
-        System.out.println("Lexer tokens: ");
-        System.out.println(lexer.tokens);
-
-        assertEquals(29, lexer.tokens.size());
+        processLexer(text);
 
         parser.setTokens(lexer.tokens);
         parser.run();
 
-        TypeChecker checker = new TypeChecker();
         checker.check(parser.root);
 
         assertTrue(parser.errors == 0);
 
-        System.out.println("Built AST tree: ");
-        System.out.println(parser.root.toString());
-
-        System.out.println("Interpreter output: ");
         interpreter.traverseTree(parser.root);
     }
 
@@ -248,31 +205,15 @@ public class CompilerTest {
                     end
                 end""";
 
-        initLexer(text);
-        initParser();
-        initInterpreter();
-
-        int result = lexer.yylex();
-
-        assertEquals(0, result);
-
-        System.out.println("Lexer tokens: ");
-        System.out.println(lexer.tokens);
-
-        assertEquals(38, lexer.tokens.size());
+        processLexer(text);
 
         parser.setTokens(lexer.tokens);
         parser.run();
 
-        TypeChecker checker = new TypeChecker();
         checker.check(parser.root);
 
         assertTrue(parser.errors == 0);
 
-        System.out.println("Built AST tree: ");
-        System.out.println(parser.root.toString());
-
-        System.out.println("Interpreter output: ");
         interpreter.traverseTree(parser.root);
     }
 
@@ -289,31 +230,15 @@ public class CompilerTest {
                     print a + b
                 end""";
 
-        initLexer(text);
-        initParser();
-        initInterpreter();
-
-        int result = lexer.yylex();
-
-        assertEquals(0, result);
-
-        System.out.println("Lexer tokens: ");
-        System.out.println(lexer.tokens);
-
-        assertEquals(43, lexer.tokens.size());
+        processLexer(text);
 
         parser.setTokens(lexer.tokens);
         parser.run();
 
-        TypeChecker checker = new TypeChecker();
         checker.check(parser.root);
 
         assertTrue(parser.errors == 0);
 
-        System.out.println("Built AST tree: ");
-        System.out.println(parser.root.toString());
-
-        System.out.println("Interpreter output: ");
         interpreter.traverseTree(parser.root);
     }
 
@@ -328,31 +253,15 @@ public class CompilerTest {
                     print a(4)
                 end""";
 
-        initLexer(text);
-        initParser();
-        initInterpreter();
-
-        int result = lexer.yylex();
-
-        assertEquals(0, result);
-
-        System.out.println("Lexer tokens: ");
-        System.out.println(lexer.tokens);
-
-        assertEquals(31, lexer.tokens.size());
+        processLexer(text);
 
         parser.setTokens(lexer.tokens);
         parser.run();
 
-        TypeChecker checker = new TypeChecker();
         checker.check(parser.root);
 
         assertTrue(parser.errors == 0);
 
-        System.out.println("Built AST tree: ");
-        System.out.println(parser.root.toString());
-
-        System.out.println("Interpreter output: ");
         interpreter.traverseTree(parser.root);
     }
 
@@ -367,28 +276,13 @@ public class CompilerTest {
                     end
                 end""";
 
-        initLexer(text);
-        initParser();
-        initInterpreter();
-
-        int result = lexer.yylex();
-
-        assertEquals(0, result);
-
-        System.out.println("Lexer tokens: ");
-        System.out.println(lexer.tokens);
-
-        assertEquals(25, lexer.tokens.size());
+        processLexer(text);
 
         parser.setTokens(lexer.tokens);
         parser.run();
 
         assertTrue(parser.errors == 0);
 
-        System.out.println("Built AST tree: ");
-        System.out.println(parser.root.toString());
-
-        System.out.println("Interpreter output: ");
         interpreter.traverseTree(parser.root);
     }
 
@@ -408,43 +302,15 @@ public class CompilerTest {
                     return a + b
                 end""";
 
-        initLexer(text);
-        initParser();
-        initInterpreter();
-
-        int result = lexer.yylex();
-
-        assertEquals(0, result);
-
-        Importer importer = new Importer();
-        List<String> additionalSources = importer.getSourcesFromTokens(lexer.tokens);
-
-        String newText = text + "\n";
-        for (String s : additionalSources) {
-            newText = newText + s;
-        }
-
-        initLexer(newText);
-
-        int newResult = lexer.yylex();
-
-        assertEquals(0, newResult);
-
-        System.out.println("Lexer tokens: ");
-        System.out.println(lexer.tokens);
+        processLexer(text);
 
         parser.setTokens(lexer.tokens);
         parser.run();
 
-        TypeChecker checker = new TypeChecker();
         checker.check(parser.root);
 
         assertTrue(parser.errors == 0);
 
-        System.out.println("Built AST tree: ");
-        System.out.println(parser.root.toString());
-
-        System.out.println("Interpreter output: ");
         interpreter.traverseTree(parser.root);
     }
 
@@ -462,43 +328,15 @@ public class CompilerTest {
                     print sumed(1, 2)
                 end""";
 
-        initLexer(text);
-        initParser();
-        initInterpreter();
-
-        int result = lexer.yylex();
-
-        assertEquals(0, result);
-
-        Importer importer = new Importer();
-        List<String> additionalSources = importer.getSourcesFromTokens(lexer.tokens);
-
-        String newText = text + "\n";
-        for (String s : additionalSources) {
-            newText = newText + s;
-        }
-
-        initLexer(newText);
-
-        int newResult = lexer.yylex();
-
-        assertEquals(0, newResult);
-
-        System.out.println("Lexer tokens: ");
-        System.out.println(lexer.tokens);
+        processLexer(text);
 
         parser.setTokens(lexer.tokens);
         parser.run();
 
-        TypeChecker checker = new TypeChecker();
         checker.check(parser.root);
 
         assertTrue(parser.errors == 0);
 
-        System.out.println("Built AST tree: ");
-        System.out.println(parser.root.toString());
-
-        System.out.println("Interpreter output: ");
         interpreter.traverseTree(parser.root);
     }
 
@@ -513,43 +351,15 @@ public class CompilerTest {
                     sum(1, 2)
                 end""";
 
-        initLexer(text);
-        initParser();
-        initInterpreter();
-
-        int result = lexer.yylex();
-
-        assertEquals(0, result);
-
-        Importer importer = new Importer();
-        List<String> additionalSources = importer.getSourcesFromTokens(lexer.tokens);
-
-        String newText = text + "\n";
-        for (String s : additionalSources) {
-            newText = newText + s;
-        }
-
-        initLexer(newText);
-
-        int newResult = lexer.yylex();
-
-        assertEquals(0, newResult);
-
-        System.out.println("Lexer tokens: ");
-        System.out.println(lexer.tokens);
+        processLexer(text);
 
         parser.setTokens(lexer.tokens);
         parser.run();
 
-        TypeChecker checker = new TypeChecker();
         checker.check(parser.root);
 
         assertTrue(parser.errors == 0);
 
-        System.out.println("Built AST tree: ");
-        System.out.println(parser.root.toString());
-
-        System.out.println("Interpreter output: ");
         interpreter.traverseTree(parser.root);
     }
 
@@ -577,43 +387,15 @@ public class CompilerTest {
                     return a + b
                 end""";
 
-        initLexer(text);
-        initParser();
-        initInterpreter();
-
-        int result = lexer.yylex();
-
-        assertEquals(0, result);
-
-        Importer importer = new Importer();
-        List<String> additionalSources = importer.getSourcesFromTokens(lexer.tokens);
-
-        String newText = text + "\n";
-        for (String s : additionalSources) {
-            newText = newText + s;
-        }
-
-        initLexer(newText);
-
-        int newResult = lexer.yylex();
-
-        assertEquals(0, newResult);
-
-        System.out.println("Lexer tokens: ");
-        System.out.println(lexer.tokens);
+        processLexer(text);
 
         parser.setTokens(lexer.tokens);
         parser.run();
 
-        TypeChecker checker = new TypeChecker();
         checker.check(parser.root);
 
         assertTrue(parser.errors == 0);
 
-        System.out.println("Built AST tree: ");
-        System.out.println(parser.root.toString());
-
-        System.out.println("Interpreter output: ");
         interpreter.traverseTree(parser.root);
     }
 }

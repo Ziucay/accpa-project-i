@@ -46,12 +46,23 @@ public class Importer {
         return sources;
     }
 
-    public List<String> getSourcesFromTokens(List<Token> tokens) throws IOException {
+    private List<String> getSourcesFromTokens(List<Token> tokens) throws IOException {
         this.tokens = tokens;
         List<String> paths = extractPathsFromTokens();
         List<String> sources = getSourcesFromPaths(paths);
 
         return sources;
+    }
+
+    public String addCodeFromImports(List<Token> tokens) throws IOException {
+        List<String> additionalSources = this.getSourcesFromTokens(tokens);
+
+        String newText = "";
+        for (String s : additionalSources) {
+            newText = newText + s + "\n";
+        }
+
+        return newText;
     }
 
 
