@@ -300,7 +300,7 @@ public class CompilerTest {
         System.out.println("Lexer tokens: ");
         System.out.println(lexer.tokens);
 
-        assertEquals(43, lexer.tokens.size());
+        assertEquals(42, lexer.tokens.size());
 
         parser.setTokens(lexer.tokens);
         parser.run();
@@ -357,10 +357,10 @@ public class CompilerTest {
     }
 
     @Test
-    public void loop() throws IOException {
+    public void loop() throws Exception {
 
         final String text = """
-                function main () : void is
+                function main () : auto is
                     var a : auto is 0
                     for a in 0..10 loop
                         print a
@@ -382,6 +382,9 @@ public class CompilerTest {
 
         parser.setTokens(lexer.tokens);
         parser.run();
+
+        TypeChecker checker = new TypeChecker();
+        checker.check(parser.root);
 
         assertTrue(parser.errors == 0);
 
