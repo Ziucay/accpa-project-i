@@ -277,51 +277,6 @@ public class CompilerTest {
     }
 
     @Test
-    public void twoFunctionsWithSameName() throws Exception {
-
-        final String text = """
-                function main () : void is
-                    identical()
-                end
-                                
-                function identical () : void is
-                    print 1
-                end
-                                
-                function identical () : void is
-                    print 2
-                end""";
-
-        initLexer(text);
-        initParser();
-        initInterpreter();
-
-        int result = lexer.yylex();
-
-        assertEquals(0, result);
-
-        System.out.println("Lexer tokens: ");
-        System.out.println(lexer.tokens);
-
-        assertEquals(32, lexer.tokens.size());
-
-        parser.setTokens(lexer.tokens);
-        parser.run();
-
-        TypeChecker checker = new TypeChecker();
-        checker.check(parser.root);
-
-        assertTrue(parser.errors == 0);
-
-        System.out.println("Built AST tree: ");
-        System.out.println(parser.root.toString());
-
-        System.out.println("Interpreter output: ");
-        interpreter.traverseTree(parser.root);
-    }
-
-
-    @Test
     public void twoFunctionsWithFullAuto() throws Exception {
 
         final String text = """
