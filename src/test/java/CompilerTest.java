@@ -408,7 +408,7 @@ public class CompilerTest {
                 import "math"
                 //This is a single line comment
                 function main () : void is
-                    var a : auto is 8 + 5
+                    var a : int is 8 + 5
                     print sum(a, 5)
                     print multiplication(a, 5)
                 end
@@ -471,6 +471,72 @@ public class CompilerTest {
                         print a + b
                     end
                     sum(1, 2)
+                end""";
+
+        initLexer(text);
+        initParser();
+        initInterpreter();
+
+        int result = lexer.yylex();
+
+        assertEquals(0, result);
+
+        Importer importer = new Importer();
+        List<String> additionalSources = importer.getSourcesFromTokens(lexer.tokens);
+
+        String newText = text + "\n";
+        for (String s: additionalSources) {
+            newText = newText + s;
+        }
+
+        initLexer(newText);
+
+        System.out.println(newText);
+
+        int newResult = lexer.yylex();
+
+        assertEquals(0, newResult);
+
+        System.out.println("Lexer tokens: ");
+        System.out.println(lexer.tokens);
+
+        parser.setTokens(lexer.tokens);
+        parser.run();
+
+        TypeChecker checker = new TypeChecker();
+        checker.check(parser.root);
+
+        assertTrue(parser.errors == 0);
+
+        System.out.println("Built AST tree: ");
+        System.out.println(parser.root.toString());
+
+        System.out.println("Interpreter output: ");
+        interpreter.traverseTree(parser.root);
+    }
+
+    @Test
+    public void demo() throws Exception {
+
+        final String text = """
+                import "math"
+                //This is a single line comment
+                function main () : void is
+                    var a : auto is factorial(10)
+                    
+                    print sum(a, 5)
+                    
+                    function quoted(quotable: auto):void is
+                        print <
+                        print quotable
+                        print >  
+                    end
+                    
+                    print quoted(a)
+                end
+                
+                function sum (a : auto, b : auto) : auto is
+                    return a + b
                 end""";
 
         initLexer(text);
